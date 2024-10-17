@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/salvanescki/obj2tpfinal/branch/main/graph/badge.svg)](https://codecov.io/gh/salvanescki/obj2tpfinal)
+
 # Trabajo Final Objetos 2
 
 ## Sistema de Alquileres Temporales

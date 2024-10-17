@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="efe0c1fe-e9b8-4b9e-889f-6597aca72746" name="Changes" comment="Update maven.yml">
+    <list default="true" id="efe0c1fe-e9b8-4b9e-889f-6597aca72746" name="Changes" comment="Update maven.yml with JaCoCo">
       <change beforePath="$PROJECT_DIR$/.github/workflows/maven.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/maven.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -176,7 +175,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729207976650</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Update maven.yml with JaCoCo">
+      <option name="closed" value="true" />
+      <created>1729208355637</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1729208355637</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -194,7 +201,8 @@
     <MESSAGE value="Update .gitignore &amp; maven.yml" />
     <MESSAGE value="Update pom.xml" />
     <MESSAGE value="Update maven.yml" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update maven.yml" />
+    <MESSAGE value="Update maven.yml with JaCoCo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update maven.yml with JaCoCo" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/obj2final$org_example_in_obj2final.ic" NAME="org.example in obj2final Coverage Results" MODIFIED="1729195949705" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
