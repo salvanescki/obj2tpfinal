@@ -12,3 +12,8 @@
 | Abril Rodriguez Fontana    | Arodriguezfontana@gmail.com   | arodriguezfontana |
 | Nicolás Salvanescki        | salvanescki.unq@gmail.com     | salvanescki       |
 -----------------------------------------------------------------------------------
+
+## Diagrama de clases UML
+
+<a href="https://raw.githubusercontent.com/salvanescki/obj2tpfinal/refs/heads/main/diagramaDeClasesUML.svg" target="_blank">![diagramaDeClasesUML.svg](diagramaDeClasesUML.svg)</a>
+(sujeto a futuros cambios)
