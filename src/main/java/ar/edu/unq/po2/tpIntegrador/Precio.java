@@ -45,21 +45,23 @@ public class Precio {
         return precio / 100.00;
     }
 
-    public Precio sumar(Precio unPrecio) {
-        long suma = Math.round(precio + unPrecio.getPrecio() * 100);
-        return new Precio(precioToDouble(suma));
+    private Precio sumarRestarPrecio(int signo, Precio unPrecio){
+        return new Precio(precioToDouble(Math.round(precio + signo * unPrecio.getPrecio() * 100.00)));
     }
 
-    private void validarResta(long resta){
-        if (resta < 0){
+    public Precio sumar(Precio unPrecio) {
+        return sumarRestarPrecio(1, unPrecio);
+    }
+
+    private void validarResta(Precio unPrecio){
+        if (getPrecio() < unPrecio.getPrecio()){
             throw new RestaDePreciosInvalidaException("No se puede restar un número más grande de otro más chico");
         }
     }
 
     public Precio restar(Precio unPrecio) {
-        long resta = Math.round(precio - unPrecio.getPrecio() * 100);
-        validarResta(resta);
-        return new Precio(precioToDouble(resta));
+        validarResta(unPrecio);
+        return sumarRestarPrecio(-1, unPrecio);
     }
 
     public Precio incremetarEnPorcentaje(int porcentaje) {
