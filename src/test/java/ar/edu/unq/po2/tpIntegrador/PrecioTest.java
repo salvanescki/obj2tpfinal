@@ -2,6 +2,8 @@ package ar.edu.unq.po2.tpIntegrador;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import ar.edu.unq.po2.tpIntegrador.excepciones.PrecioInvalidoException;
+import ar.edu.unq.po2.tpIntegrador.excepciones.RestaDePreciosInvalidaException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
