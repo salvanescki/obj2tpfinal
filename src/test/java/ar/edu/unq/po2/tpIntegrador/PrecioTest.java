@@ -99,27 +99,27 @@ public class PrecioTest {
 
     @Test
     void decrementarEnPorcentajeEnteroTest() {
-        assertEquals(3.03, precioA.decremetarEnPorcentaje(75).getPrecio());
+        assertEquals(3.03, precioA.decrementarEnPorcentaje(75).getPrecio());
     }
 
     @Test
     void decrementarEnPorcentajeConDecimalesTest() {
-        assertEquals(2.97, precioA.decremetarEnPorcentaje(75.5).getPrecio());
+        assertEquals(2.97, precioA.decrementarEnPorcentaje(75.5).getPrecio());
     }
 
     @Test
     void decrementarMasDelCienPorCientoLanzaExcepcionTest() {
         PrecioInvalidoException excepcion = assertThrows(PrecioInvalidoException.class, ()->{
-                                                            Precio failPrecio = precioA.decremetarEnPorcentaje(100.1);
+                                                            Precio failPrecio = precioA.decrementarEnPorcentaje(100.1);
                                                         });
         assertTrue(excepcion.getMessage().contains("No se puede decrementar un porcentaje mayor al 100, ya que daría un precio negativo (inválido)"));
     }
 
     @Test
     void decrementarEnCeroPorcientoDevuelveElMismoNumeroTest() {
-        assertEquals(12.15, precioA.decremetarEnPorcentaje(0).getPrecio());
-        assertEquals(12.15, precioA.decremetarEnPorcentaje(0.0).getPrecio());
-        assertEquals(12.15, precioA.decremetarEnPorcentaje(0.00).getPrecio());
+        assertEquals(12.15, precioA.decrementarEnPorcentaje(0).getPrecio());
+        assertEquals(12.15, precioA.decrementarEnPorcentaje(0.0).getPrecio());
+        assertEquals(12.15, precioA.decrementarEnPorcentaje(0.00).getPrecio());
     }
 
 }
