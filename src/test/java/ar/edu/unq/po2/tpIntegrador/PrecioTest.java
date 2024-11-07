@@ -82,29 +82,29 @@ public class PrecioTest {
 
     @Test
     void incrementarEnPorcentajeEnteroTest() {
-        assertEquals(14.70, precioA.incremetarEnPorcentaje(21));
+        assertEquals(14.70, precioA.incremetarEnPorcentaje(21).getPrecio());
     }
 
     @Test
     void incrementarEnPorcentajeConDecimalesTest() {
-        assertEquals(14.76, precioA.incremetarEnPorcentaje(21.5));
+        assertEquals(14.76, precioA.incremetarEnPorcentaje(21.5).getPrecio());
     }
 
     @Test
     void incrementarEnCeroPorcientoDevuelveElMismoNumeroTest() {
-        assertEquals(12.15, precioA.incremetarEnPorcentaje(0));
-        assertEquals(12.15, precioA.incremetarEnPorcentaje(0.0));
-        assertEquals(12.15, precioA.incremetarEnPorcentaje(0.00));
+        assertEquals(12.15, precioA.incremetarEnPorcentaje(0).getPrecio());
+        assertEquals(12.15, precioA.incremetarEnPorcentaje(0.0).getPrecio());
+        assertEquals(12.15, precioA.incremetarEnPorcentaje(0.00).getPrecio());
     }
 
     @Test
     void decrementarEnPorcentajeEnteroTest() {
-        assertEquals(3.03, precioA.decremetarEnPorcentaje(75));
+        assertEquals(3.03, precioA.decremetarEnPorcentaje(75).getPrecio());
     }
 
     @Test
     void decrementarEnPorcentajeConDecimalesTest() {
-        assertEquals(2.97, precioA.decremetarEnPorcentaje(75.5));
+        assertEquals(2.97, precioA.decremetarEnPorcentaje(75.5).getPrecio());
     }
 
     @Test
@@ -117,9 +117,9 @@ public class PrecioTest {
 
     @Test
     void decrementarEnCeroPorcientoDevuelveElMismoNumeroTest() {
-        assertEquals(12.15, precioA.decremetarEnPorcentaje(0));
-        assertEquals(12.15, precioA.decremetarEnPorcentaje(0.0));
-        assertEquals(12.15, precioA.decremetarEnPorcentaje(0.00));
+        assertEquals(12.15, precioA.decremetarEnPorcentaje(0).getPrecio());
+        assertEquals(12.15, precioA.decremetarEnPorcentaje(0.0).getPrecio());
+        assertEquals(12.15, precioA.decremetarEnPorcentaje(0.00).getPrecio());
     }
 
 }
