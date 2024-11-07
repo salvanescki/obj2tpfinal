@@ -14,13 +14,15 @@ public class PrecioTest {
 
     @BeforeEach
     void setUp() {
-        precioA = new Precio(12, 15);
-        precioB = new Precio(30, 2);
+        precioA = new Precio(12.15);
+        precioB = new Precio(30.2);
     }
 
     @Test
     void getPrecioTest() {
         assertEquals(12.15, precioA.getPrecio());
+        assertEquals(30.20, precioB.getPrecio());
+        assertEquals(34, new Precio(34).getPrecio());
     }
 
     @Test
@@ -31,20 +33,26 @@ public class PrecioTest {
 
     @Test
     void instanciarPrecioConUnDecimalTest() {
-        Precio unDecimal = new Precio(34, 1);
+        Precio unDecimal = new Precio(34.1);
         assertEquals(34.10, unDecimal.getPrecio());
     }
 
     @Test
     void instanciarPrecioConDosDecimalesTest() {
-        Precio dosDecimales = new Precio(34, 12);
+        Precio dosDecimales = new Precio(34.12);
         assertEquals(34.12, dosDecimales.getPrecio());
+    }
+
+    @Test
+    void instanciarPrecioConDosDecimalesPeroLaDecenaEsUnCeroTest() {
+        Precio dosDecimales = new Precio(34.02);
+        assertEquals(34.02, dosDecimales.getPrecio());
     }
 
     @Test
     void instanciarPrecioConMasDeTresDecimalesLanzaExcepcionTest() {
         PrecioInvalidoException excepcion = assertThrows(PrecioInvalidoException.class, ()->{
-                                                            Precio failPrecio = new Precio(145, 309);
+                                                            Precio failPrecio = new Precio(145.309);
                                                         });
         assertTrue(excepcion.getMessage().contains("El precio ingresado no es válido, debe contener menos de 3 decimales"));
     }
@@ -52,14 +60,14 @@ public class PrecioTest {
     @Test
     void instanciarPrecioNumerosNegativosLanzaExcepcionTest() {
         PrecioInvalidoException excepcion = assertThrows(PrecioInvalidoException.class, ()->{
-                                                            Precio failPrecio = new Precio(-145, 30);
+                                                            Precio failPrecio = new Precio(-145.30);
                                                         });
         assertTrue(excepcion.getMessage().contains("El precio ingresado no es válido, no se admiten números negativos"));
     }
 
     @Test
     void toStringTest() {
-        assertEquals("12.15", precioA.toString());
+        assertEquals("$12.15", precioA.toString());
     }
 
     @Test
