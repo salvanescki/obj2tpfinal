@@ -15,5 +15,12 @@
 
 ## Diagrama de clases UML
 
-<a href="https://raw.githubusercontent.com/salvanescki/obj2tpfinal/refs/heads/main/diagramaDeClasesUML.svg" target="_blank">![diagramaDeClasesUML.svg](diagramaDeClasesUML.svg)</a>
+<a href="./diagramaDeClasesUML.svg" target="_blank">
+  <picture>
+    <source srcset="./diagramaDeClasesUMLDarkMode.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="./diagramaDeClasesUML.svg" media="(prefers-color-scheme: light)">
+    <img src="./diagramaDeClasesUML.svg" alt="Diagrama de clases UML del Proyecto">
+  </picture>
+</a>
+
 (sujeto a futuros cambios)
