@@ -17,7 +17,7 @@
 
 <a href="./diagramaDeClasesUML.svg" target="_blank">
   <picture>
-    <source srcset="./diagramaDeClasesUMLDarkMode.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/salvanescki/obj2tpfinal/7987190089e3dee6b9be833010458edce55aded6/diagramaDeClasesUML.svg" media="(prefers-color-scheme: dark)">
     <source srcset="./diagramaDeClasesUML.svg" media="(prefers-color-scheme: light)">
     <img src="./diagramaDeClasesUML.svg" alt="Diagrama de clases UML del Proyecto">
   </picture>
