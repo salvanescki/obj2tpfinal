@@ -21,12 +21,12 @@ public class PublicacionTest {
 
     @BeforeEach
     void setUp() {
-        dummyPropietario = mock();
-        dummyTipoDeInmueble = mock();
-        dummyFoto = mock();
-        dummyFormaDePago = mock();
-        dummyServicio = mock();
-        dummyPrecio = mock();
+        dummyPropietario = mock(Usuario.class);
+        dummyTipoDeInmueble = mock(TipoDeInmueble.class);
+        dummyFoto = mock(Foto.class);
+        dummyFormaDePago = mock(FormaDePago.class);
+        dummyServicio = mock(Servicio.class);
+        dummyPrecio = mock(Precio.class);
         publicacion = new Publicacion(
                                   dummyPropietario,
                                   dummyTipoDeInmueble,
