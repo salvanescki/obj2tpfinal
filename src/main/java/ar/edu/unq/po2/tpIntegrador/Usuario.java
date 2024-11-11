@@ -2,7 +2,13 @@ package ar.edu.unq.po2.tpIntegrador;
 
 import java.util.List;
 
-public class Usuario implements Propietario, Inquilino{
+public class Usuario implements Propietario, Inquilino {
+
+    @Override
+    public void agregarReserva(Reserva reserva) {
+
+    }
+
     @Override
     public List<Reserva> getReservas() {
         return List.of();

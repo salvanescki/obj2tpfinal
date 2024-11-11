@@ -1,10 +1,11 @@
 package ar.edu.unq.po2.tpIntegrador;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Publicacion {
+public class Publicacion implements Rankeable {
 
     private Propietario propietario;
     private TipoDeInmueble tipoDeInmueble;
@@ -19,6 +20,11 @@ public class Publicacion {
     private LocalTime horarioCheckOut;
     private List<FormaDePago> formasDePago = new ArrayList<FormaDePago>();
     private Precio precioBase;
+    private PoliticaDeCancelacion politicaDeCancelacion;
+    private List<Ranking> rankings = new ArrayList<Ranking>();
+    private List<Reserva> reservas = new ArrayList<Reserva>();
+    private List<Periodo> periodos = new ArrayList<Periodo>();
+    private Listener notificador = new Notificador();
 
     public Publicacion(Propietario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase) {
         this.propietario = propietario;
@@ -82,5 +88,74 @@ public class Publicacion {
 
     public List<FormaDePago> getFormasDePago() {
         return formasDePago;
+    }
+
+    public Precio getPrecio(LocalDate fechaDesde, LocalDate fechaHasta) {
+        // TODO: implementar
+        return new Precio(0);
+    }
+
+    public void definirPoliticaDeCancelacion(PoliticaDeCancelacion politica){
+        // TODO: implementar
+    }
+
+    public void definirPeriodo(LocalDate fechaDesde, LocalDate fechaHasta, Precio precio){
+        // TODO: implementar
+    }
+
+    public int getCantidadDeVecesAlquilada() {
+        // TODO: implementar
+        return 0;
+    }
+
+    public boolean estaReservadaEnFechas(LocalDate fechaDesde, LocalDate fechaHasta) {
+        // TODO: Implementar
+        return false;
+    }
+
+    public void reservar(Inquilino inquilino, LocalDate fechaDesde, LocalDate fechaHasta, FormaDePago formaDePago) {
+        // TODO: Implementar
+    }
+
+    public void cancelarReserva(Reserva reserva) {
+        // TODO: Implementar
+        // politica.efectuarCancelacion
+    }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void suscribirNotificaciones(Listener suscriptor) {
+        // TODO: Implementar
+    }
+
+    @Override
+    public void puntuar(Usuario usuario, int puntaje, String comentario, Categoria categoria) {
+        // TODO: Implementar
+    }
+
+    @Override
+    public double getPuntajePromedioEnCategoria(Categoria categoria) {
+        // TODO: Implementar
+        return 0;
+    }
+
+    @Override
+    public double getPuntajePromedioTotal() {
+        // TODO: Implementar
+        return 0;
+    }
+
+    @Override
+    public List<String> getComentariosDeInquilinosPrevios() {
+        // TODO: Implementar
+        return null;
+    }
+
+    @Override
+    public int getPuntajeDeUsuarioEnCategoria(Usuario usuario, Categoria categoria) {
+        // TODO: Implementar
+        return 0;
     }
 }
