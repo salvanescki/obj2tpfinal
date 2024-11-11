@@ -2,6 +2,7 @@ package ar.edu.unq.po2.tpIntegrador;
 
 import ar.edu.unq.po2.tpIntegrador.excepciones.*;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -261,9 +262,12 @@ public class Publicacion implements Rankeable {
     }
 
     private double getPuntajePromedioDeRankings(Stream<Ranking> str){
-        return str.mapToInt(Ranking::getPuntaje)
-                .average()
-                .orElseThrow();
+        DecimalFormat formato = new DecimalFormat("#.#");
+        return Double.parseDouble(formato.format(
+                    str.mapToInt(Ranking::getPuntaje)
+                        .average()
+                        .orElseThrow()
+        ));
     }
 
     @Override
