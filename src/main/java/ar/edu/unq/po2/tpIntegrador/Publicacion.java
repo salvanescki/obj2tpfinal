@@ -1,8 +1,6 @@
 package ar.edu.unq.po2.tpIntegrador;
 
-import ar.edu.unq.po2.tpIntegrador.excepciones.FechasInvalidasException;
-import ar.edu.unq.po2.tpIntegrador.excepciones.PeriodoYaDefinidoException;
-import ar.edu.unq.po2.tpIntegrador.excepciones.PeriodoYaReservadoException;
+import ar.edu.unq.po2.tpIntegrador.excepciones.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,8 +28,11 @@ public class Publicacion implements Rankeable {
     private final List<Reserva> reservas = new ArrayList<Reserva>();
     private final List<Periodo> periodos = new ArrayList<Periodo>();
     private Notificador notificador = new Notificador();
+    private final SitioWeb sitio;
+    private int cantCheckOuts;
+    private List<Inquilino> inquilinosPrevios = new ArrayList<Inquilino>();
 
-    public Publicacion(Propietario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase) {
+    public Publicacion(Propietario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase, SitioWeb sitio) {
         this.propietario = propietario;
         this.tipoDeInmueble = tipoDeInmueble;
         this.superficie = superficie;
@@ -46,6 +47,8 @@ public class Publicacion implements Rankeable {
         this.formasDePago.addAll(formasDePago);
         this.precioBase = precioBase;
         definirPoliticaDeCancelacion(new PoliticaSinCancelacion());
+        this.sitio = sitio;
+        this.cantCheckOuts = 0;
     }
 
     public Propietario getPropietario() {
@@ -133,9 +136,10 @@ public class Publicacion implements Rankeable {
     }
 
     public int getCantidadDeVecesAlquilada() {
-        return (int) reservas.stream()
-                            .filter(Reserva::estaAprobada)
-                            .count();
+        // Alquileres pasados (check-outs) + alquileres presentes
+        return cantCheckOuts + (int) reservas.stream()
+                                            .filter(Reserva::estaAprobada)
+                                            .count();
     }
 
     public boolean estaReservadaEnFechas(LocalDate fechaDesde, LocalDate fechaHasta) {
@@ -165,6 +169,7 @@ public class Publicacion implements Rankeable {
             notificarNuevaReserva(fechaDesde, fechaHasta);
         }
         reservas.add(reserva);
+        inquilinosPrevios.remove(inquilino);
         inquilino.agregarReserva(reserva);
     }
 
@@ -189,6 +194,26 @@ public class Publicacion implements Rankeable {
         handleReservaCondicional(reserva.getFechaDesde(), reserva.getFechaHasta());
     }
 
+    private void validarReservaAprobada(Reserva reserva) {
+        if(!reserva.estaAprobada()){
+            throw new CheckOutNoRealizadoException("No se puede hacer check out de una reserva previamente aprobada");
+        }
+    }
+
+    private void validarHorarioCheckOut(LocalTime horaActual) {
+        if(horaActual.isAfter(horarioCheckOut)){
+            throw new CheckOutNoRealizadoException("El horario de check-out de hoy ya ha pasado, inténtelo mañana");
+        }
+    }
+
+    public void checkOut(Reserva reserva, LocalTime horaActual){
+        validarReservaAprobada(reserva);
+        validarHorarioCheckOut(horaActual);
+        cantCheckOuts++;
+        inquilinosPrevios.add(reserva.getInquilino());
+        reservas.remove(reserva);
+    }
+
     public List<Reserva> getReservas() {
         return reservas;
     }
@@ -197,16 +222,41 @@ public class Publicacion implements Rankeable {
         notificador.suscribir(suscriptor);
     }
 
+    private boolean fueHechoElCheckOut(Inquilino inquilino){
+        return inquilinosPrevios.contains(inquilino);
+    }
+
+    private void validarCheckOut(Inquilino inquilino) {
+        if(!fueHechoElCheckOut(inquilino)){
+            throw new CheckOutNoRealizadoException("No se puede rankear antes de hacer el check-out");
+        }
+    }
+
+    private void validarCategoria(Categoria categoria) {
+        if(!sitio.esCategoriaValida(categoria, this)){
+            throw new CategoriaInvalidaException("La categoría ingresada no es válida");
+        }
+    }
+
+    private boolean puntajeInvalido(int puntaje) {
+        return puntaje < 1 || puntaje > 5;
+    }
+
+    private void validarPuntaje(int puntaje) {
+        if(puntajeInvalido(puntaje)){
+            throw new PuntajeInvalidoException("El puntaje debe ser en una escala del 1 al 5");
+        }
+    }
+
+    private void validarRanking(Ranking ranking) {
+        validarCheckOut(ranking.getUsuario());
+        validarCategoria(ranking.getCategoria());
+        validarPuntaje(ranking.getPuntaje());
+    }
+
     @Override
-    public void puntuar(Usuario usuario, int puntaje, String comentario, Categoria categoria) {
-        /*
-        TODO:
-            - validar que se puntuó luego del check-out
-            - validar que el puntaje sea un número del 1 al 5
-            - validar que el comentario no tenga palabras groseras (?
-            - validar que la categoría existe en el sitio web
-         */
-        Ranking ranking = new Ranking(usuario, puntaje, comentario, categoria);
+    public void puntuar(Ranking ranking) {
+        validarRanking(ranking);
         rankings.add(ranking);
     }
 

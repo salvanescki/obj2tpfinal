@@ -3,13 +3,12 @@ package ar.edu.unq.po2.tpIntegrador;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import ar.edu.unq.po2.tpIntegrador.excepciones.FechasInvalidasException;
-import ar.edu.unq.po2.tpIntegrador.excepciones.PeriodoYaDefinidoException;
-import ar.edu.unq.po2.tpIntegrador.excepciones.PrecioInvalidoException;
+import ar.edu.unq.po2.tpIntegrador.excepciones.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import javax.naming.spi.ResolveResult;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -18,6 +17,7 @@ import java.util.Arrays;
 public class PublicacionTest {
 
     private Publicacion publicacion;
+    private SitioWeb sitio;
     private Propietario dummyPropietario;
     private TipoDeInmueble dummyTipoDeInmueble;
     private Foto dummyFoto;
@@ -32,6 +32,7 @@ public class PublicacionTest {
 
     @BeforeEach
     void setUp() {
+        sitio = mock(SitioWeb.class);
         dummyPropietario = mock(Usuario.class);
         dummyTipoDeInmueble = mock(TipoDeInmueble.class);
         dummyFoto = mock(Foto.class);
@@ -52,7 +53,8 @@ public class PublicacionTest {
                                   LocalTime.of(14, 0),
                                   LocalTime.of(12,0),
                                   Arrays.asList(dummyFormaDePago, dummyFormaDePago, dummyFormaDePago, dummyFormaDePago),
-                                  dummyPrecio
+                                  dummyPrecio,
+                                  sitio
                                 );
         inquilino = mock(Usuario.class);
         tarjeta = mock(FormaDePago.class);
@@ -382,4 +384,83 @@ public class PublicacionTest {
         verify(listener).notificarCancelacionReserva("El/la "+ publicacion.getTipoDeInmueble() + " que te interesa se ha liberado! Corre a reservarlo!", publicacion);
     }
 
+    @Test
+    void checkOutTest() {
+        Usuario inquilino = mock(Usuario.class);
+        Reserva reserva = mock(Reserva.class);
+        when(reserva.estaAprobada()).thenReturn(true);
+        publicacion.getReservas().add(reserva);
+        when(reserva.getInquilino()).thenReturn(inquilino);
+
+        assertEquals(1, publicacion.getReservas().size());
+
+        publicacion.checkOut(reserva, publicacion.getHorarioCheckOut());
+
+        assertEquals(0, publicacion.getReservas().size());
+    }
+
+    private Categoria setUpCategoriaValida(){
+        Categoria servicios = mock(Categoria.class);
+        when(sitio.esCategoriaValida(servicios, publicacion)).thenReturn(true);
+        return servicios;
+    }
+
+    private Ranking setUpRanking(Usuario inquilino, int puntaje, Categoria categoria){
+        Ranking ranking = mock(Ranking.class);
+
+        when(ranking.getUsuario()).thenReturn(inquilino);
+        when(ranking.getPuntaje()).thenReturn(puntaje);
+        when(ranking.getComentario()).thenReturn("Muy buen wi-fi");
+        when(ranking.getCategoria()).thenReturn(categoria);
+
+        return ranking;
+    }
+
+    private Usuario setUpCheckOutContext() {
+        Usuario inquilino = mock(Usuario.class);
+        Reserva reserva = mock(Reserva.class);
+        when(reserva.estaAprobada()).thenReturn(true);
+        when(reserva.getInquilino()).thenReturn(inquilino);
+        publicacion.checkOut(reserva, publicacion.getHorarioCheckOut());
+        return inquilino;
+    }
+
+    @Test
+    void puntuarTest(){
+        publicacion.puntuar(setUpRanking(setUpCheckOutContext(), 5, setUpCategoriaValida()));
+    }
+
+    @Test
+    void puntuarSinHaberHechoCheckOutLanzaExcepcionTest() {
+        Usuario inquilino = mock(Usuario.class);
+
+        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->{
+            publicacion.puntuar(setUpRanking(inquilino, 5, setUpCategoriaValida()));
+        });
+        assertTrue(excepcion.getMessage().contains("No se puede rankear antes de hacer el check-out"));
+    }
+
+    @Test
+    void puntuarConUnPuntajeMayorACincoLanzaExcepcionTest() {
+        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->{
+            publicacion.puntuar(setUpRanking(setUpCheckOutContext(), 10, setUpCategoriaValida()));
+        });
+        assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
+    }
+
+    @Test
+    void puntuarConUnPuntajeMenorAUnoLanzaExcepcionTest() {
+        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->{
+            publicacion.puntuar(setUpRanking(setUpCheckOutContext(), 0, setUpCategoriaValida()));
+        });
+        assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
+    }
+
+    @Test
+    void puntuarUnaCategoriaInvalidaLanzaExcepcionTest() {
+        CategoriaInvalidaException excepcion = assertThrows(CategoriaInvalidaException.class, ()->{
+            publicacion.puntuar(setUpRanking(setUpCheckOutContext(), 0, mock(Categoria.class)));
+        });
+        assertTrue(excepcion.getMessage().contains("La categoría ingresada no es válida"));
+    }
 }

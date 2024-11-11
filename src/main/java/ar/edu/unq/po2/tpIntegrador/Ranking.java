@@ -21,6 +21,6 @@ public class Ranking {
 
     public Categoria getCategoria(){
         // TODO: Implementar
-        return new Categoria();
+        return null;
     }
 }
