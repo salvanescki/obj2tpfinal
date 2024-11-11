@@ -3,7 +3,7 @@ package ar.edu.unq.po2.tpIntegrador;
 import ar.edu.unq.po2.tpIntegrador.excepciones.PrecioInvalidoException;
 import ar.edu.unq.po2.tpIntegrador.excepciones.RestaDePreciosInvalidaException;
 
-public class Precio {
+public class Precio implements Comparable<Precio> {
 
     private long precio;
 
@@ -91,5 +91,10 @@ public class Precio {
     @Override
     public String toString(){
         return String.format("$%,.2f", (double) precio / 100);
+    }
+
+    @Override
+    public int compareTo(Precio o) {
+        return Double.compare(getPrecio(), o.getPrecio());
     }
 }
