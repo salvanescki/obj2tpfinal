@@ -45,6 +45,7 @@ public class Publicacion implements Rankeable {
         this.horarioCheckOut = horarioCheckOut;
         this.formasDePago.addAll(formasDePago);
         this.precioBase = precioBase;
+        definirPoliticaDeCancelacion(new PoliticaSinCancelacion());
     }
 
     public Propietario getPropietario() {
@@ -95,13 +96,25 @@ public class Publicacion implements Rankeable {
         return formasDePago;
     }
 
+    private Precio precioDelDia(LocalDate dia){
+        return periodos.stream()
+                .filter(periodo -> periodo.estaDentroDelPeriodo(dia))
+                .map(Periodo::getPrecio)
+                .findFirst()
+                .orElse(precioBase);
+    }
+
     public Precio getPrecio(LocalDate fechaDesde, LocalDate fechaHasta) {
-        // TODO: implementar
-        return new Precio(0);
+        Precio total = new Precio(0);
+        for(LocalDate dia = fechaDesde; !dia.isAfter(fechaHasta); dia = dia.plusDays(1)){
+            System.out.println("precio del dia: " + dia + " = " + precioDelDia(dia).getPrecio());
+            total = total.sumar(precioDelDia(dia));
+        }
+        return total;
     }
 
     public void definirPoliticaDeCancelacion(PoliticaDeCancelacion politica){
-        // TODO: implementar
+        this.politicaDeCancelacion = politica;
     }
 
     private boolean estaPreviamenteDefinidoOSeSuperponeElPeriodo(Periodo periodo){
@@ -114,10 +127,11 @@ public class Publicacion implements Rankeable {
         }
     }
 
-    public void definirPeriodo(LocalDate fechaDesde, LocalDate fechaHasta, Precio precio){
+    public Periodo definirPeriodo(LocalDate fechaDesde, LocalDate fechaHasta, Precio precio){
         Periodo periodo = new Periodo(fechaDesde, fechaHasta, precio);
         validarPeriodo(periodo);
         periodos.add(periodo);
+        return periodo;
     }
 
     public int getCantidadDeVecesAlquilada() {
