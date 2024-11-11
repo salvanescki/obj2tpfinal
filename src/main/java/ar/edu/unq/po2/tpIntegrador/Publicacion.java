@@ -12,23 +12,23 @@ import java.util.stream.Stream;
 
 public class Publicacion implements Rankeable {
 
-    private Propietario propietario;
-    private TipoDeInmueble tipoDeInmueble;
-    private int superficie;
-    private String pais;
-    private String ciudad;
-    private String direccion;
-    private List<Servicio> servicios = new ArrayList<Servicio>();
+    private final Propietario propietario;
+    private final TipoDeInmueble tipoDeInmueble;
+    private final int superficie;
+    private final String pais;
+    private final String ciudad;
+    private final String direccion;
+    private final List<Servicio> servicios = new ArrayList<Servicio>();
     private int capacidad;
-    private List<Foto> fotos = new ArrayList<Foto>();
+    private final List<Foto> fotos = new ArrayList<Foto>();
     private LocalTime horarioCheckIn;
     private LocalTime horarioCheckOut;
-    private List<FormaDePago> formasDePago = new ArrayList<FormaDePago>();
+    private final List<FormaDePago> formasDePago = new ArrayList<FormaDePago>();
     private Precio precioBase;
     private PoliticaDeCancelacion politicaDeCancelacion;
-    private List<Ranking> rankings = new ArrayList<Ranking>();
-    private List<Reserva> reservas = new ArrayList<Reserva>();
-    private List<Periodo> periodos = new ArrayList<Periodo>();
+    private final List<Ranking> rankings = new ArrayList<Ranking>();
+    private final List<Reserva> reservas = new ArrayList<Reserva>();
+    private final List<Periodo> periodos = new ArrayList<Periodo>();
     private Notificador notificador = new Notificador();
 
     public Publicacion(Propietario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase) {
@@ -107,7 +107,6 @@ public class Publicacion implements Rankeable {
     public Precio getPrecio(LocalDate fechaDesde, LocalDate fechaHasta) {
         Precio total = new Precio(0);
         for(LocalDate dia = fechaDesde; !dia.isAfter(fechaHasta); dia = dia.plusDays(1)){
-            System.out.println("precio del dia: " + dia + " = " + precioDelDia(dia).getPrecio());
             total = total.sumar(precioDelDia(dia));
         }
         return total;
@@ -163,7 +162,7 @@ public class Publicacion implements Rankeable {
         // propietario.agregarReservaParaAprobar(reserva); o simplemente notificar (lo cual se hace abajo)
         reservas.add(reserva);
         inquilino.agregarReserva(reserva);
-        notificador.notificarReserva("El inmueble " + tipoDeInmueble + " que te interesa, ha sido reservado desde el 1/12/24 hasta el 16/12/24.", this);
+        notificador.notificarReserva("El inmueble " + tipoDeInmueble + " que te interesa, ha sido reservado desde el " + fechaDesde + " hasta el " + fechaHasta + ".", this);
     }
 
     public void cancelarReserva(Reserva reserva) {
@@ -226,5 +225,20 @@ public class Publicacion implements Rankeable {
                 .mapToInt(Ranking::getPuntaje)
                 .findFirst()
                 .orElseThrow();
+    }
+
+    public void setNotificador(Notificador notificador){
+        this.notificador = notificador;
+    }
+
+    public void setPrecioBase(Precio nuevoPrecio){
+        if(nuevoPrecio.compareTo(precioBase) < 0) {
+            notificador.notificarBajaDePrecio(
+                    "No te pierdas esta oferta: Un inmueble " + tipoDeInmueble
+                            + " a tan sólo " + nuevoPrecio + " pesos",
+                    this
+            );
+        }
+        precioBase = nuevoPrecio;
     }
 }
