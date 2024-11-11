@@ -49,4 +49,9 @@ public class Reserva implements EstadoReserva {
         // TODO: Implementar
         return LocalDate.now();
     }
+
+    public Inquilino getInquilino() {
+        // TODO: Implementar
+        return null;
+    }
 }

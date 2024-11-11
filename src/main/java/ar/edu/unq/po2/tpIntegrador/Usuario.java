@@ -45,7 +45,7 @@ public class Usuario implements Propietario, Inquilino {
     }
 
     @Override
-    public void puntuar(Usuario usuario, int puntaje, String comentario, Categoria categoria) {
+    public void puntuar(Ranking ranking) {
 
     }
 
