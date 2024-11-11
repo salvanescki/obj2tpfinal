@@ -15,4 +15,14 @@ public class Periodo {
         // TODO: Implementar
         return 0;
     }
+
+    public boolean estaDentroDelPeriodo(LocalDate dia) {
+        // TODO: Implementar
+        return false;
+    }
+
+    public Precio getPrecio() {
+        // TODO: Implementar
+        return new Precio(0);
+    }
 }
