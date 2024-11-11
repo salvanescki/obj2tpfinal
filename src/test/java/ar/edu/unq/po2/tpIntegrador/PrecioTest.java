@@ -130,4 +130,11 @@ public class PrecioTest {
         assertEquals(12.15, precioA.decrementarEnPorcentaje(0.00).getPrecio());
     }
 
+    @Test
+    void compareToTest() {
+        assertEquals(-1, precioA.compareTo(precioB));
+        Precio precioIdenticoA = new Precio(12.15);
+        assertEquals(0, precioA.compareTo(precioIdenticoA));
+        assertEquals(1, precioB.compareTo(precioA));
+    }
 }
