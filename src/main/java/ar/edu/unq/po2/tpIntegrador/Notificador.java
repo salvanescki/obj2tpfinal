@@ -15,4 +15,7 @@ public class Notificador implements Listener {
     public void notificarBajaDePrecio(String mensaje, Publicacion publicacion) {
         // TODO: Implementar
     }
+
+    public void suscribir(Listener suscriptor) {
+    }
 }

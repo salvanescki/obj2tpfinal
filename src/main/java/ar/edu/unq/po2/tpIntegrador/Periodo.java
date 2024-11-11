@@ -1,6 +1,11 @@
 package ar.edu.unq.po2.tpIntegrador;
 
+import java.time.LocalDate;
+
 public class Periodo {
+    public Periodo(LocalDate fechaDesde, LocalDate fechaHasta, Precio precio) {
+    }
+
     public boolean seSuperponeCon(Periodo otroPeriodo) {
         // TODO: Implementar
         return false;
