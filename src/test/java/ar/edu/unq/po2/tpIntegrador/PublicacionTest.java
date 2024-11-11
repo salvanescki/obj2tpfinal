@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import ar.edu.unq.po2.tpIntegrador.excepciones.FechasInvalidasException;
+import ar.edu.unq.po2.tpIntegrador.excepciones.PeriodoYaDefinidoException;
 import ar.edu.unq.po2.tpIntegrador.excepciones.PrecioInvalidoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,7 @@ public class PublicacionTest {
         diaHasta = LocalDate.of(2024, 12, 15);
 
         mockPeriodo = mock(Periodo.class);
+        when(mockPeriodo.seSuperponeCon(mockPeriodo)).thenReturn(true);
         for(LocalDate dia = diaDesde; !dia.isAfter(diaHasta); dia = dia.plusDays(1)){
             when(mockPeriodo.estaDentroDelPeriodo(dia)).thenReturn(true);
             when(mockPeriodo.getPrecio()).thenReturn(new Precio(2000));
@@ -130,6 +132,31 @@ public class PublicacionTest {
         int cantDeDias = 15;
         assertEquals(dummyPrecio.getPrecio() * cantDeDias,
                 publicacion.getPrecio(diaDesde, diaHasta).getPrecio());
+    }
+
+    @Test
+    void definirPeriodoDosOMasVecesLanzaExcepcion() {
+        publicacion.definirPeriodo(mockPeriodo);
+
+        PeriodoYaDefinidoException excepcion = assertThrows(PeriodoYaDefinidoException.class, ()->{
+            publicacion.definirPeriodo(mockPeriodo);
+        });
+
+        assertTrue(excepcion.getMessage().contains("El periodo existe o se superpone con otro definido previamente"));
+    }
+
+    @Test
+    void definirPeriodoQueSeSuperponeAOtroYaDefinidoPreviamenteLanzaExcepcion() {
+        publicacion.definirPeriodo(mockPeriodo);
+
+        Periodo mockPeriodoSuperpuesto = mock(Periodo.class);
+        when(mockPeriodo.seSuperponeCon(mockPeriodoSuperpuesto)).thenReturn(true);
+
+        PeriodoYaDefinidoException excepcion = assertThrows(PeriodoYaDefinidoException.class, ()->{
+            publicacion.definirPeriodo(mockPeriodoSuperpuesto);
+        });
+
+        assertTrue(excepcion.getMessage().contains("El periodo existe o se superpone con otro definido previamente"));
     }
 
     @Test
@@ -314,6 +341,29 @@ public class PublicacionTest {
     }
 
     @Test
+    void subaDePrecioNoNotificaBajaDePrecioTest() {
+        Notificador mockNotificador = mock(Notificador.class);
+        publicacion.setNotificador(mockNotificador);
+        Listener listener = mock();
+        publicacion.suscribirNotificaciones(listener);
+
+        doAnswer(invocation ->{
+            String msg = invocation.getArgument(0);
+            Publicacion publicacion = invocation.getArgument(1);
+            listener.notificarBajaDePrecio(msg, publicacion);
+            return null;
+        }).when(mockNotificador).notificarBajaDePrecio(anyString(), any());
+
+        Precio nuevoPrecio = mock(Precio.class);
+        when(nuevoPrecio.compareTo(any())).thenReturn(1);
+        when(nuevoPrecio.toString()).thenReturn("$750.00");
+        publicacion.setPrecioBase(nuevoPrecio);
+
+        verify(listener, never()).notificarBajaDePrecio("No te pierdas esta oferta: Un inmueble " + publicacion.getTipoDeInmueble()
+                + " a tan sólo " + nuevoPrecio.toString() + " pesos", publicacion);
+    }
+
+    @Test
     void suscribirNotificacionesDeCancelacionDeReservaTest() {
         publicacion.reservar(inquilino, diaDesde, diaHasta, tarjeta);
         Notificador mockNotificador = mock(Notificador.class);
@@ -331,4 +381,5 @@ public class PublicacionTest {
         publicacion.cancelarReserva(publicacion.getReservas().getFirst());
         verify(listener).notificarCancelacionReserva("El/la "+ publicacion.getTipoDeInmueble() + " que te interesa se ha liberado! Corre a reservarlo!", publicacion);
     }
+
 }
