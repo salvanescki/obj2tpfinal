@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 
@@ -18,6 +20,8 @@ public class PublicacionTest {
     private FormaDePago dummyFormaDePago;
     private Servicio dummyServicio;
     private Precio dummyPrecio;
+    Inquilino inquilino;
+    FormaDePago tarjeta;
 
     @BeforeEach
     void setUp() {
@@ -27,6 +31,7 @@ public class PublicacionTest {
         dummyFormaDePago = mock(FormaDePago.class);
         dummyServicio = mock(Servicio.class);
         dummyPrecio = mock(Precio.class);
+        when(dummyPrecio.getPrecio()).thenReturn(500.0);
         publicacion = new Publicacion(
                                   dummyPropietario,
                                   dummyTipoDeInmueble,
@@ -42,6 +47,8 @@ public class PublicacionTest {
                                   Arrays.asList(dummyFormaDePago, dummyFormaDePago, dummyFormaDePago, dummyFormaDePago),
                                   dummyPrecio
                                 );
+        inquilino = mock(Usuario.class);
+        tarjeta = mock(FormaDePago.class);
     }
 
     @Test
@@ -103,13 +110,110 @@ public class PublicacionTest {
     void getFormasDePagoTest() {
         assertEquals(Arrays.asList(dummyFormaDePago, dummyFormaDePago, dummyFormaDePago, dummyFormaDePago), publicacion.getFormasDePago());
     }
-/*
+
     @Test
-    void getPrecioEnElCasoNormalDebeDevolverElPrecioBaseTest() {
-        Periodo periodoNormal = mock();
-        when(periodoNormal.)
-        assertEquals(dummyPrecio, publicacion.getPrecio());
+    void getPrecioEnElCasoNormalDebeDevolverElPrecioBasePorLaCantidadDeDiasTest() {
+        int cantDeDias = 15;
+        assertEquals(dummyPrecio.getPrecio() * cantDeDias,
+                publicacion.getPrecio(LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16)).getPrecio());
     }
 
- */
+    @Test
+    void getPrecioEnUnPeriodoDefinidoDebeDevolverElPrecioDeDichoPeriodoPorLaCantidadDeDiasTest() {
+        int cantDeDias = 15;
+        publicacion.definirPeriodo(
+                LocalDate.of(24, 12, 1),
+                LocalDate.of(24, 12, 16),
+                new Precio(2000)
+        );
+        assertEquals(2000 * cantDeDias,
+                publicacion.getPrecio(LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16)).getPrecio());
+    }
+
+    @Test
+    void getPrecioEntreUnPeriodoDefinidoYPeriodoNormalDebeDevolverLaSumaSegunCorrespondeTest() {
+        int cantDeDiasEnPeriodo = 10;
+        int cantDeDiasFueraDelPeriodo = 7;
+        publicacion.definirPeriodo(
+                LocalDate.of(24, 12, 1),
+                LocalDate.of(24, 12, 16),
+                new Precio(2000)
+        );
+        assertEquals(2000 * cantDeDiasEnPeriodo + dummyPrecio.getPrecio() * cantDeDiasFueraDelPeriodo,
+                publicacion.getPrecio(LocalDate.of(24, 12, 6), LocalDate.of(24, 12, 23)).getPrecio());
+    }
+
+    @Test
+    void reservarTest() {
+        assertEquals(0, publicacion.getReservas().size());
+        publicacion.reservar(inquilino, LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16), tarjeta);
+        verify(inquilino).agregarReserva(any(Reserva.class));
+        assertEquals(1, publicacion.getReservas().size());
+    }
+
+    @Test
+    void estaReservadaEnFechasTest() {
+        assertFalse(publicacion.estaReservadaEnFechas(LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16)));
+        publicacion.reservar(inquilino, LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16), tarjeta);
+        assertTrue(publicacion.estaReservadaEnFechas(LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16)));
+    }
+
+    @Test
+    void estaReservadaEnFechasAunqueSoloCoincidaUnDiaTest() {
+        assertFalse(publicacion.estaReservadaEnFechas(LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16)));
+        publicacion.reservar(inquilino, LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16), tarjeta);
+        assertTrue(publicacion.estaReservadaEnFechas(LocalDate.of(24, 12, 15), LocalDate.of(24, 12, 24)));
+    }
+
+    @Test
+    void cancelarReservaTest() {
+        publicacion.reservar(inquilino, LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16), tarjeta);
+        ArgumentCaptor<Reserva> captor = ArgumentCaptor.forClass(Reserva.class);
+        verify(inquilino).agregarReserva(captor.capture());
+        Reserva reserva = captor.getValue();
+        publicacion.cancelarReserva(reserva);
+        assertTrue(publicacion.getReservas().getFirst().fueCancelada());
+    }
+
+    @Test
+    void getCantidadDeVecesAlquiladaSiNoFueAlquiladaDebeDarCeroTest() {
+        assertEquals(0, publicacion.getCantidadDeVecesAlquilada());
+    }
+
+    @Test
+    void getCantidadDeVecesAlquiladaSiFueAlquiladaTest() {
+        publicacion.reservar(inquilino, LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16), tarjeta);
+        assertEquals(0, publicacion.getCantidadDeVecesAlquilada());
+        publicacion.getReservas().getFirst().aprobarReserva();
+        assertEquals(1, publicacion.getCantidadDeVecesAlquilada());
+    }
+
+    @Test
+    void suscribirNotificacionesDeReservaTest() {
+        Listener listener = mock();
+        publicacion.suscribirNotificaciones(listener);
+
+        publicacion.reservar(inquilino, LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16), tarjeta);
+        verify(listener).notificarReserva("El inmueble " + publicacion.getTipoDeInmueble() +
+                " que te interesa, ha sido reservado desde el 1/12/24 hasta el 16/12/24.", publicacion); //El mensaje se manda al reservar, por lo que las fechas se encuentran en ese scope
+    }
+
+    @Test
+    void suscribirNotificacionesDeBajaDePrecioTest() {
+        Listener listener = mock();
+        publicacion.suscribirNotificaciones(listener);
+
+        // publicacion.bajarPrecio() o cuando termina un período (pero es más difícil de detectar)
+        verify(listener).notificarBajaDePrecio("No te pierdas esta oferta: Un inmueble " + publicacion.getTipoDeInmueble()
+                + " a tan sólo " + publicacion.getPrecio(LocalDate.now(), LocalDate.now()) + " pesos", publicacion);
+    }
+
+    @Test
+    void suscribirNotificacionesDeCancelacionDeReservaTest() {
+        publicacion.reservar(inquilino, LocalDate.of(24, 12, 1), LocalDate.of(24, 12, 16), tarjeta);
+        Listener listener = mock();
+        publicacion.suscribirNotificaciones(listener);
+        publicacion.cancelarReserva(publicacion.getReservas().getFirst());
+        verify(listener).notificarCancelacionReserva("El/la "+ publicacion.getTipoDeInmueble() + " que te interesa se ha liberado! Corre a reservarlo!", publicacion);
+    }
 }
