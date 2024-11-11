@@ -127,8 +127,7 @@ public class Publicacion implements Rankeable {
         }
     }
 
-    public Periodo definirPeriodo(LocalDate fechaDesde, LocalDate fechaHasta, Precio precio){
-        Periodo periodo = new Periodo(fechaDesde, fechaHasta, precio);
+    public Periodo definirPeriodo(Periodo periodo){
         validarPeriodo(periodo);
         periodos.add(periodo);
         return periodo;
