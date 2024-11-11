@@ -1,9 +1,14 @@
 package ar.edu.unq.po2.tpIntegrador;
 
+import ar.edu.unq.po2.tpIntegrador.excepciones.FechasInvalidasException;
+import ar.edu.unq.po2.tpIntegrador.excepciones.PeriodoYaDefinidoException;
+import ar.edu.unq.po2.tpIntegrador.excepciones.PeriodoYaReservadoException;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Publicacion implements Rankeable {
 
@@ -24,7 +29,7 @@ public class Publicacion implements Rankeable {
     private List<Ranking> rankings = new ArrayList<Ranking>();
     private List<Reserva> reservas = new ArrayList<Reserva>();
     private List<Periodo> periodos = new ArrayList<Periodo>();
-    private Listener notificador = new Notificador();
+    private Notificador notificador = new Notificador();
 
     public Publicacion(Propietario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase) {
         this.propietario = propietario;
@@ -99,27 +104,59 @@ public class Publicacion implements Rankeable {
         // TODO: implementar
     }
 
+    private boolean estaPreviamenteDefinidoOSeSuperponeElPeriodo(Periodo periodo){
+        return periodos.contains(periodo) || periodos.stream().anyMatch(p -> p.seSuperponeCon(periodo));
+    }
+
+    private void validarPeriodo(Periodo periodo){
+        if(estaPreviamenteDefinidoOSeSuperponeElPeriodo(periodo)){
+            throw new PeriodoYaDefinidoException("El periodo existe o se superpone con otro definido previamente");
+        }
+    }
+
     public void definirPeriodo(LocalDate fechaDesde, LocalDate fechaHasta, Precio precio){
-        // TODO: implementar
+        Periodo periodo = new Periodo(fechaDesde, fechaHasta, precio);
+        validarPeriodo(periodo);
+        periodos.add(periodo);
     }
 
     public int getCantidadDeVecesAlquilada() {
-        // TODO: implementar
-        return 0;
+        return (int) reservas.stream()
+                            .filter(Reserva::estaAprobada)
+                            .count();
     }
 
     public boolean estaReservadaEnFechas(LocalDate fechaDesde, LocalDate fechaHasta) {
-        // TODO: Implementar
-        return false;
+        return reservas.stream()
+                .anyMatch(reserva -> reserva.seSuperponeConElPeriodo(fechaDesde, fechaHasta));
+    }
+
+    private boolean sonFechasInvalidas(LocalDate fechaDesde, LocalDate fechaHasta) {
+        return fechaHasta.isBefore(fechaDesde);
+    }
+
+    private void validarFechasEnReserva(LocalDate fechaDesde, LocalDate fechaHasta) {
+        if(sonFechasInvalidas(fechaDesde, fechaHasta)){
+            throw new FechasInvalidasException("Las fechas introducidas no son válidas.");
+        }
+        if(estaReservadaEnFechas(fechaDesde, fechaHasta)){
+            throw new PeriodoYaReservadoException("El período en el que estás tratando de reservar, ya se encuentra reservado.");
+        }
     }
 
     public void reservar(Inquilino inquilino, LocalDate fechaDesde, LocalDate fechaHasta, FormaDePago formaDePago) {
-        // TODO: Implementar
+        validarFechasEnReserva(fechaDesde, fechaHasta);
+        Reserva reserva = new Reserva(inquilino, fechaDesde, fechaHasta, formaDePago, this);
+        // propietario.agregarReservaParaAprobar(reserva); o simplemente notificar (lo cual se hace abajo)
+        reservas.add(reserva);
+        inquilino.agregarReserva(reserva);
+        notificador.notificarReserva("El inmueble " + tipoDeInmueble + " que te interesa, ha sido reservado desde el 1/12/24 hasta el 16/12/24.", this);
     }
 
     public void cancelarReserva(Reserva reserva) {
-        // TODO: Implementar
-        // politica.efectuarCancelacion
+        politicaDeCancelacion.efectuarCancelacion();
+        reserva.cancelarReserva();
+        notificador.notificarCancelacionReserva("El/la "+ tipoDeInmueble + " que te interesa se ha liberado! Corre a reservarlo!", this);
     }
 
     public List<Reserva> getReservas() {
@@ -127,35 +164,54 @@ public class Publicacion implements Rankeable {
     }
 
     public void suscribirNotificaciones(Listener suscriptor) {
-        // TODO: Implementar
+        notificador.suscribir(suscriptor);
     }
 
     @Override
     public void puntuar(Usuario usuario, int puntaje, String comentario, Categoria categoria) {
-        // TODO: Implementar
+        /*
+        TODO:
+            - validar que se puntuó luego del check-out
+            - validar que el puntaje sea un número del 1 al 5
+            - validar que el comentario no tenga palabras groseras (?
+            - validar que la categoría existe en el sitio web
+         */
+        Ranking ranking = new Ranking(usuario, puntaje, comentario, categoria);
+        rankings.add(ranking);
+    }
+
+    private double getPuntajePromedioDeRankings(Stream<Ranking> str){
+        return str.mapToInt(Ranking::getPuntaje)
+                .average()
+                .orElseThrow();
     }
 
     @Override
     public double getPuntajePromedioEnCategoria(Categoria categoria) {
-        // TODO: Implementar
-        return 0;
+        return getPuntajePromedioDeRankings(rankings.stream()
+                                                    .filter(ranking -> ranking.getCategoria().equals(categoria)));
     }
 
     @Override
     public double getPuntajePromedioTotal() {
-        // TODO: Implementar
-        return 0;
+        return getPuntajePromedioDeRankings(rankings.stream());
     }
 
     @Override
     public List<String> getComentariosDeInquilinosPrevios() {
-        // TODO: Implementar
-        return null;
+        // Podría cambiarse la List<String> por un Map<Usuario o Inquilino, String>
+        return rankings.stream()
+                    .map(Ranking::getComentario)
+                    .toList();
     }
 
     @Override
     public int getPuntajeDeUsuarioEnCategoria(Usuario usuario, Categoria categoria) {
-        // TODO: Implementar
-        return 0;
+        return rankings.stream()
+                .filter(ranking -> ranking.getUsuario().equals(usuario))
+                .filter(ranking -> ranking.getCategoria().equals(categoria))
+                .mapToInt(Ranking::getPuntaje)
+                .findFirst()
+                .orElseThrow();
     }
 }
