@@ -2,6 +2,9 @@ package ar.edu.unq.po2.tpIntegrador;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import ar.edu.unq.po2.tpIntegrador.excepciones.FechasInvalidasException;
+import ar.edu.unq.po2.tpIntegrador.excepciones.PrecioInvalidoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -156,6 +159,31 @@ public class PublicacionTest {
     }
 
     @Test
+    void reservarConFechaDesdePosteriorAFechaHastaLanzaExcepcionTest() {
+        FechasInvalidasException excepcion = assertThrows(FechasInvalidasException.class, ()->{
+            publicacion.reservar(inquilino, diaHasta, diaDesde, tarjeta);
+        });
+        assertTrue(excepcion.getMessage().contains("Las fechas introducidas no son válidas."));
+    }
+
+    @Test
+    void reservarEnUnPeriodoYaReservadoCreaUnaReservaCondicionalTest() {
+        Notificador mockNotificador = mock(Notificador.class);
+        publicacion.setNotificador(mockNotificador);
+
+        Reserva reserva = mock(Reserva.class);
+        when(reserva.seSuperponeConElPeriodo(diaDesde, diaHasta)).thenReturn(true);
+        if(!publicacion.estaReservadaEnFechas(diaDesde,diaHasta)){
+            mockNotificador.notificarReserva(anyString(), any());
+        }
+        publicacion.getReservas().add(reserva);
+
+        publicacion.reservar(inquilino, diaDesde, diaHasta, tarjeta);
+
+        verify(mockNotificador, atMost(1)).notificarReserva(anyString(), any());
+    }
+
+    @Test
     void estaReservadaEnFechasTest() {
         assertFalse(publicacion.estaReservadaEnFechas(diaDesde, diaHasta));
 
@@ -185,6 +213,48 @@ public class PublicacionTest {
         Reserva reserva = spy(captor.getValue());
         publicacion.cancelarReserva(reserva);
         verify(reserva).cancelarReserva();
+    }
+
+    @Test
+    void cancelarReservaConReservasCondicionalesEjecutaLaPrimeraDeEllasTest() {
+        Notificador mockNotificador = mock(Notificador.class);
+        publicacion.setNotificador(mockNotificador);
+
+        Reserva mockReserva = mock(Reserva.class);
+
+        when(mockReserva.seSuperponeConElPeriodo(diaDesde, diaHasta)).thenReturn(true);
+        when(mockReserva.getFechaDesde()).thenReturn(diaDesde);
+        when(mockReserva.getFechaHasta()).thenReturn(diaHasta);
+
+        assertFalse(publicacion.estaReservadaEnFechas(diaDesde,diaHasta));
+
+        if(!publicacion.estaReservadaEnFechas(diaDesde,diaHasta)){
+            mockNotificador.notificarReserva(anyString(), any());
+        }
+        publicacion.getReservas().add(mockReserva);
+
+        Reserva mockReservaCondicional = mock(Reserva.class);
+
+        when(mockReservaCondicional.seSuperponeConElPeriodo(diaDesde, diaHasta)).thenReturn(true);
+        when(mockReservaCondicional.getFechaDesde()).thenReturn(diaDesde);
+        when(mockReservaCondicional.getFechaHasta()).thenReturn(diaHasta);
+        when(mockReservaCondicional.estaPendiente()).thenReturn(true);
+
+        assertTrue(publicacion.estaReservadaEnFechas(diaDesde,diaHasta));
+
+        if(!publicacion.estaReservadaEnFechas(diaDesde,diaHasta)){
+            mockNotificador.notificarReserva(anyString(), any());
+        }
+
+        publicacion.getReservas().add(mockReservaCondicional);
+
+        //doNothing().when(mockReserva).cancelarReserva();
+        when(mockReserva.fueCancelada()).thenReturn(true);
+        when(mockReserva.estaPendiente()).thenReturn(false);
+
+        publicacion.cancelarReserva(mockReserva);
+
+        verify(mockNotificador, atLeast(2)).notificarReserva(anyString(), any());
     }
 
     @Test

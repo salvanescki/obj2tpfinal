@@ -4,5 +4,6 @@ public interface EstadoReserva {
     void aprobarReserva();
     void cancelarReserva();
     boolean estaAprobada();
+    boolean estaPendiente();
     boolean fueCancelada();
 }
