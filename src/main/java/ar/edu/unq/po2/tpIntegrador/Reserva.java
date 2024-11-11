@@ -24,6 +24,12 @@ public class Reserva implements EstadoReserva {
     }
 
     @Override
+    public boolean estaPendiente() {
+        // TODO: Implementar
+        return false;
+    }
+
+    @Override
     public boolean fueCancelada() {
         // TODO: Implementar
         return false;
@@ -32,5 +38,15 @@ public class Reserva implements EstadoReserva {
     public boolean seSuperponeConElPeriodo(LocalDate fechaDesde, LocalDate fechaHasta) {
         // TODO: Implementar
         return false;
+    }
+
+    public LocalDate getFechaDesde(){
+        // TODO: Implementar
+        return LocalDate.now();
+    }
+
+    public LocalDate getFechaHasta(){
+        // TODO: Implementar
+        return LocalDate.now();
     }
 }

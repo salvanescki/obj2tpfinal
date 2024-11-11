@@ -151,24 +151,42 @@ public class Publicacion implements Rankeable {
         if(sonFechasInvalidas(fechaDesde, fechaHasta)){
             throw new FechasInvalidasException("Las fechas introducidas no son válidas.");
         }
-        if(estaReservadaEnFechas(fechaDesde, fechaHasta)){
-            throw new PeriodoYaReservadoException("El período en el que estás tratando de reservar, ya se encuentra reservado.");
-        }
+    }
+
+    private void notificarNuevaReserva(LocalDate fechaDesde, LocalDate fechaHasta){
+        notificador.notificarReserva("El inmueble " + tipoDeInmueble + " que te interesa, ha sido reservado desde el " + fechaDesde + " hasta el " + fechaHasta + ".", this);
     }
 
     public void reservar(Inquilino inquilino, LocalDate fechaDesde, LocalDate fechaHasta, FormaDePago formaDePago) {
         validarFechasEnReserva(fechaDesde, fechaHasta);
         Reserva reserva = new Reserva(inquilino, fechaDesde, fechaHasta, formaDePago, this);
         // propietario.agregarReservaParaAprobar(reserva); o simplemente notificar (lo cual se hace abajo)
+        if(!estaReservadaEnFechas(fechaDesde, fechaHasta)) {
+            notificarNuevaReserva(fechaDesde, fechaHasta);
+        }
         reservas.add(reserva);
         inquilino.agregarReserva(reserva);
-        notificador.notificarReserva("El inmueble " + tipoDeInmueble + " que te interesa, ha sido reservado desde el " + fechaDesde + " hasta el " + fechaHasta + ".", this);
+    }
+
+    private Reserva getFirstReservaCondicional(LocalDate fechaDesde, LocalDate fechaHasta){
+        return reservas.stream()
+                .filter(reserva -> reserva.seSuperponeConElPeriodo(fechaDesde, fechaHasta) && reserva.estaPendiente())
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void handleReservaCondicional(LocalDate fechaDesde, LocalDate fechaHasta) {
+        Reserva reservaCondicional = getFirstReservaCondicional(fechaDesde, fechaHasta);
+        if(reservaCondicional != null){
+            notificarNuevaReserva(fechaDesde, fechaHasta);
+        }
     }
 
     public void cancelarReserva(Reserva reserva) {
         politicaDeCancelacion.efectuarCancelacion();
         reserva.cancelarReserva();
         notificador.notificarCancelacionReserva("El/la "+ tipoDeInmueble + " que te interesa se ha liberado! Corre a reservarlo!", this);
+        handleReservaCondicional(reserva.getFechaDesde(), reserva.getFechaHasta());
     }
 
     public List<Reserva> getReservas() {
