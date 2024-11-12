@@ -23,6 +23,6 @@ class ServicioTest {
 
         servicio.setServicio(nuevoServicio);
 
-        assertEquals(nuevoServicio, servicio.getServicio());
+        assertEquals(TextoNormalizado.normalizarTexto(nuevoServicio), servicio.getServicio());
     }
 }
