@@ -12,7 +12,7 @@ class ServicioTest {
 
         Servicio servicio = new Servicio(nombreServicio);
 
-        assertEquals(nombreServicio, servicio.getServicio());
+        assertEquals(TextoNormalizado.normalizarTexto(nombreServicio), servicio.getServicio());
     }
 
     @Test
