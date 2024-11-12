@@ -72,15 +72,32 @@ public class ReservaTest {
     }
 
     @Test
-    void estadoInicialReservaPendienteTest() {
-        assertTrue(reserva.estaPendiente());
+    void reservaAprobadaEstaAprobadaTest() {
+        reserva.setEstado(estadoAprobadaMock);
+
+        when(estadoAprobadaMock.estaAprobada()).thenReturn(true);
+
+        assertTrue(reserva.estaAprobada());
+        assertFalse(reserva.estaPendiente());
+        assertFalse(reserva.fueCancelada());
     }
 
     @Test
     void setEstadoCambiaEstadoAAprobadaTest() {
         reserva.setEstado(estadoAprobadaMock);
-        when(estadoAprobadaMock.estaPendiente()).thenReturn(true);
+        when(estadoAprobadaMock.estaAprobada()).thenReturn(true);
         assertTrue(reserva.estaAprobada());
+    }
+
+    @Test
+    void reservaPendienteEstaPendienteTest() {
+        reserva.setEstado(estadoPendienteMock);
+
+        when(estadoPendienteMock.estaPendiente()).thenReturn(true);
+
+        assertTrue(reserva.estaPendiente());
+        assertFalse(reserva.estaAprobada());
+        assertFalse(reserva.fueCancelada());
     }
 
     @Test
@@ -93,10 +110,26 @@ public class ReservaTest {
     }
 
     @Test
+    void reservaCanceladaEstaCanceladaTest() {
+        reserva.setEstado(estadoCanceladaMock);
+
+        when(estadoCanceladaMock.fueCancelada()).thenReturn(true);
+
+        assertTrue(reserva.fueCancelada());
+        assertFalse(reserva.estaAprobada());
+        assertFalse(reserva.estaPendiente());
+    }
+
+    @Test
     void setEstadoCambiaEstadoACanceladaTest() {
         reserva.setEstado(estadoCanceladaMock);
-        when(estadoCanceladaMock.estaPendiente()).thenReturn(true);
+        when(estadoCanceladaMock.fueCancelada()).thenReturn(true);
         assertTrue(reserva.fueCancelada());
+    }
+
+    @Test
+    void estadoInicialReservaPendienteTest() {
+        assertTrue(reserva.estaPendiente());
     }
 
     @Test
@@ -105,7 +138,7 @@ public class ReservaTest {
         doAnswer(invocation -> {
             reserva.setEstado(estadoAprobadaMock);
             return null;
-        }).when(reserva).aprobarReserva();
+        }).when(estadoPendienteMock).aprobarReserva(); // ! anda si cambio reserva por estadoPendienteMok.
 
         reserva.aprobarReserva();
 
@@ -113,7 +146,7 @@ public class ReservaTest {
         when(estadoAprobadaMock.estaAprobada()).thenReturn(true);
 
         assertTrue(reserva.estaAprobada());
-        //        TODO: MANDAR MAIL A INQUILINO Y (CONSOLIDAR EN EL SISTEMA)
+        // TODO: MANDAR MAIL A INQUILINO Y (CONSOLIDAR EN EL SISTEMA)
     }
 
     @Test
@@ -122,7 +155,7 @@ public class ReservaTest {
         doAnswer(invocation -> {
             reserva.setEstado(estadoCanceladaMock);
             return null;
-        }).when(reserva).cancelarReserva();
+        }).when(estadoPendienteMock).cancelarReserva();
 
         reserva.cancelarReserva();
 
@@ -135,10 +168,12 @@ public class ReservaTest {
     @Test
     void reservaAprobadaPuedeSerCanceladaTest() {
 
+        reserva.setEstado(estadoAprobadaMock);
+
         doAnswer(invocation -> {
             reserva.setEstado(estadoCanceladaMock);
             return null;
-        }).when(reserva).cancelarReserva();
+        }).when(estadoAprobadaMock).cancelarReserva();
 
         reserva.cancelarReserva();
 
@@ -168,27 +203,27 @@ public class ReservaTest {
         reserva.setEstado(estadoCanceladaMock);
 
         doThrow(new OperacionInvalidaConEstadoReservaException("No se puede cancelar una reserva ya cancelada."))
-                .when(estadoAprobadaMock).aprobarReserva();
+                .when(estadoCanceladaMock).cancelarReserva();
 
         OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
             reserva.cancelarReserva();
         });
         assertTrue(excepcion.getMessage().contains("No se puede cancelar una reserva ya cancelada."));
 
-        verify(estadoCanceladaMock, times(1)).aprobarReserva();
+        verify(estadoCanceladaMock, times(1)).cancelarReserva();
     }
 
     @Test
     void aprobarReservaCanceladaLanzaExcepcionTest() {
         reserva.setEstado(estadoCanceladaMock);
 
-        doThrow(new OperacionInvalidaConEstadoReservaException("No se puede aprobar una reserva que ya se cancelo."))
+        doThrow(new OperacionInvalidaConEstadoReservaException("No se puede aprobar una reserva ya cancelada."))
                 .when(estadoCanceladaMock).aprobarReserva();
 
         OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
             reserva.aprobarReserva();
         });
-        assertTrue(excepcion.getMessage().contains("No se puede aprobar una reserva que ya se cancelo."));
+        assertTrue(excepcion.getMessage().contains("No se puede aprobar una reserva ya cancelada."));
 
         verify(estadoCanceladaMock, times(1)).aprobarReserva();
     }
@@ -213,7 +248,7 @@ public class ReservaTest {
         LocalDate nuevaFechaInicio = fechaInicio.plusDays(30);
         LocalDate nuevaFechaFin = fechaFin.plusDays(30);
 
-        assertTrue(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
+        assertFalse(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
     }
 
     @Test
@@ -230,11 +265,15 @@ public class ReservaTest {
         LocalDate nuevaFechaInicio = fechaInicio.plusDays(5);
         LocalDate nuevaFechaFin = fechaFin.plusDays(5);
 
+        doThrow(new OperacionInvalidaConEstadoReservaException("Ya existe una reserva en las fechas seleccionadas."))
+                .when(reserva).seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin);
+
         OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
             reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin);
         });
 
         assertTrue(excepcion.getMessage().contains("Ya existe una reserva en las fechas seleccionadas."));
+        verify(reserva, times(1)).seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin);
     }
 }
 

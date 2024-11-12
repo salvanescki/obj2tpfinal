@@ -4,54 +4,72 @@ import java.time.LocalDate;
 
 public class Reserva implements EstadoReserva {
 
+    private EstadoReserva estado;
+    private Inquilino inquilino;
+    private LocalDate fechaDesde;
+    private LocalDate fechaHasta;
+    private FormaDePago formaDePago;
+    private Publicacion publicacion;
+
     public Reserva(Inquilino inquilino, LocalDate fechaDesde, LocalDate fechaHasta, FormaDePago formaDePago, Publicacion publicacion) {
+        this.inquilino = inquilino;
+        this.fechaDesde = fechaDesde;
+        this.fechaHasta = fechaHasta;
+        this.formaDePago = formaDePago;
+        this.publicacion = publicacion;
+        this.estado = new ReservaPendiente();
     }
 
-    @Override
-    public void aprobarReserva() {
-        // TODO: Implementar
+    public LocalDate getFechaDesde(){
+        return fechaDesde;
     }
 
-    @Override
-    public void cancelarReserva() {
-        // TODO: Implementar
+    public LocalDate getFechaHasta(){
+        return fechaHasta;
+    }
+
+    public Inquilino getInquilino() {
+        return inquilino;
+    }
+
+    public Publicacion getPublicacion() {
+        return publicacion;
+    }
+
+    public FormaDePago getFormaDePago() {
+        return formaDePago;
+    }
+
+    public void setEstado(EstadoReserva estado) {
+        this.estado = estado;
     }
 
     @Override
     public boolean estaAprobada() {
-        // TODO: Implementar
-        return false;
+        return estado.estaAprobada();
     }
 
     @Override
     public boolean estaPendiente() {
-        // TODO: Implementar
-        return false;
+        return estado.estaPendiente();
     }
 
     @Override
     public boolean fueCancelada() {
-        // TODO: Implementar
-        return false;
+        return estado.fueCancelada();
+    }
+
+    @Override
+    public void aprobarReserva() {
+        estado.aprobarReserva();
+    }
+
+    @Override
+    public void cancelarReserva() {
+        estado.cancelarReserva();
     }
 
     public boolean seSuperponeConElPeriodo(LocalDate fechaDesde, LocalDate fechaHasta) {
-        // TODO: Implementar
-        return false;
-    }
-
-    public LocalDate getFechaDesde(){
-        // TODO: Implementar
-        return LocalDate.now();
-    }
-
-    public LocalDate getFechaHasta(){
-        // TODO: Implementar
-        return LocalDate.now();
-    }
-
-    public Inquilino getInquilino() {
-        // TODO: Implementar
-        return null;
+        return !fechaDesde.isAfter(this.getFechaHasta()) && !fechaHasta.isBefore(this.getFechaDesde());
     }
 }
