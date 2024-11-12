@@ -12,4 +12,8 @@ public class SitioWeb {
         // TODO: Implementar
         return true;
     }
+
+    public void darDeAltaInmueble(Propietario propietario, Publicacion publicacion) {
+        // TODO: Implementar
+    }
 }

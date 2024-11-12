@@ -208,6 +208,8 @@ public class Publicacion implements Rankeable {
     }
 
     public void checkOut(Reserva reserva, LocalTime horaActual){
+        // FIXME: Acá habría que agregar una validación de que se haga el checkout luego de la fechaHasta de la reserva
+        //  y antes del horarioCheckOut de ese mismo día.
         validarReservaAprobada(reserva);
         validarHorarioCheckOut(horaActual);
         cantCheckOuts++;
