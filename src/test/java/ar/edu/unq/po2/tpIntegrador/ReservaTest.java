@@ -38,12 +38,6 @@ public class ReservaTest {
     }
 
     @Test
-    void estadoInicialReservaPendienteTest() {
-
-        assertTrue(reserva.estaPendiente());
-    }
-
-    @Test
     void getInquilinoTest() {
         assertEquals(dummyInquilino, reserva.getInquilino());
     }
@@ -59,7 +53,54 @@ public class ReservaTest {
     }
 
     @Test
-    void reservaPendientePuedeSerAceptadaTest() {
+    void getPublicacionTest() {
+        assertEquals(dummyPublicacion, reserva.getPublicacion());
+    }
+
+    @Test
+    void getFormaDePagoTest() {
+        assertEquals(dummyFormaDePago, reserva.getFormaDePago());
+    }
+
+    @Test
+    void inicializacionDeReservaTest() {
+        assertEquals(fechaInicio, reserva.getFechaDesde());
+        assertEquals(fechaFin, reserva.getFechaHasta());
+        assertEquals(dummyInquilino, reserva.getInquilino());
+        assertEquals(dummyFormaDePago, reserva.getFormaDePago());
+        assertEquals(dummyPublicacion, reserva.getPublicacion());
+    }
+
+    @Test
+    void estadoInicialReservaPendienteTest() {
+        assertTrue(reserva.estaPendiente());
+    }
+
+    @Test
+    void setEstadoCambiaEstadoAAprobadaTest() {
+        reserva.setEstado(estadoAprobadaMock);
+        when(estadoAprobadaMock.estaPendiente()).thenReturn(true);
+        assertTrue(reserva.estaAprobada());
+    }
+
+    @Test
+    void setEstadoCambiaEstadoAPendienteTest() {
+        setEstadoCambiaEstadoAAprobadaTest();
+
+        reserva.setEstado(estadoPendienteMock);
+        when(estadoPendienteMock.estaPendiente()).thenReturn(true);
+        assertTrue(reserva.estaPendiente());
+    }
+
+    @Test
+    void setEstadoCambiaEstadoACanceladaTest() {
+        reserva.setEstado(estadoCanceladaMock);
+        when(estadoCanceladaMock.estaPendiente()).thenReturn(true);
+        assertTrue(reserva.fueCancelada());
+    }
+
+    @Test
+    void reservaPendientePuedeSerAprobadaTest() {
 
         doAnswer(invocation -> {
             reserva.setEstado(estadoAprobadaMock);
@@ -92,6 +133,22 @@ public class ReservaTest {
     }
 
     @Test
+    void reservaAprobadaPuedeSerCanceladaTest() {
+
+        doAnswer(invocation -> {
+            reserva.setEstado(estadoCanceladaMock);
+            return null;
+        }).when(reserva).cancelarReserva();
+
+        reserva.cancelarReserva();
+
+        verify(estadoAprobadaMock).cancelarReserva();
+        when(estadoCanceladaMock.fueCancelada()).thenReturn(true);
+
+        assertTrue(reserva.fueCancelada());
+    }
+
+    @Test
     void aprobarReservaAprobadaLanzaExcepcionTest() {
         reserva.setEstado(estadoAprobadaMock);
 
@@ -105,4 +162,80 @@ public class ReservaTest {
 
         verify(estadoAprobadaMock, times(1)).aprobarReserva();
     }
+
+    @Test
+    void cancelarReservaCanceladaLanzaExcepcionTest() {
+        reserva.setEstado(estadoCanceladaMock);
+
+        doThrow(new OperacionInvalidaConEstadoReservaException("No se puede cancelar una reserva ya cancelada."))
+                .when(estadoAprobadaMock).aprobarReserva();
+
+        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
+            reserva.cancelarReserva();
+        });
+        assertTrue(excepcion.getMessage().contains("No se puede cancelar una reserva ya cancelada."));
+
+        verify(estadoCanceladaMock, times(1)).aprobarReserva();
+    }
+
+    @Test
+    void aprobarReservaCanceladaLanzaExcepcionTest() {
+        reserva.setEstado(estadoCanceladaMock);
+
+        doThrow(new OperacionInvalidaConEstadoReservaException("No se puede aprobar una reserva que ya se cancelo."))
+                .when(estadoCanceladaMock).aprobarReserva();
+
+        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
+            reserva.aprobarReserva();
+        });
+        assertTrue(excepcion.getMessage().contains("No se puede aprobar una reserva que ya se cancelo."));
+
+        verify(estadoCanceladaMock, times(1)).aprobarReserva();
+    }
+
+    @Test
+    void validacionDeFechasTest() {
+        assertTrue(fechaFin.isAfter(fechaInicio));
+        assertEquals(LocalDate.now(), fechaInicio);
+        assertEquals(fechaInicio.plusDays(10), fechaFin);
+    }
+
+    @Test
+    void reservaSeSuperponenConUnPeriodoYaReservadoTest() {
+        LocalDate nuevaFechaInicio = fechaInicio.plusDays(5);
+        LocalDate nuevaFechaFin = fechaFin;
+
+        assertTrue(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
+    }
+
+    @Test
+    void reservaNoSeSuperponenConUnPeriodoYaReservadoTest() {
+        LocalDate nuevaFechaInicio = fechaInicio.plusDays(30);
+        LocalDate nuevaFechaFin = fechaFin.plusDays(30);
+
+        assertTrue(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
+    }
+
+    @Test
+    void reservaSeSuperponenConUnPeriodoYaReservadoPorSoloUnDiaTest() {
+        LocalDate nuevaFechaInicio = fechaInicio.plusDays(9);
+        LocalDate nuevaFechaFin = fechaFin.plusDays(9);
+
+        assertTrue(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
+    }
+
+    @Test
+    void reservarEnFechaSuperpuestaLanzaExcepcion() {
+
+        LocalDate nuevaFechaInicio = fechaInicio.plusDays(5);
+        LocalDate nuevaFechaFin = fechaFin.plusDays(5);
+
+        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
+            reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin);
+        });
+
+        assertTrue(excepcion.getMessage().contains("Ya existe una reserva en las fechas seleccionadas."));
+    }
 }
+
+
