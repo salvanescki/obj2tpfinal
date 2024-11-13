@@ -94,6 +94,14 @@ public class Precio implements Comparable<Precio> {
     }
 
     @Override
+    public boolean equals(Object o){
+        if(this == o) return true;
+        if(o.getClass() != Precio.class) return false;
+        Precio otroPrecio = (Precio) o;
+        return this.getPrecio() == otroPrecio.getPrecio();
+    }
+
+    @Override
     public int compareTo(Precio o) {
         return Double.compare(getPrecio(), o.getPrecio());
     }

@@ -8,25 +8,23 @@ import java.util.stream.Stream;
 
 public class Busqueda {
 
-    private String ciudad;
-    private LocalDate fechaEntrada;
-    private LocalDate fechaSalida;
-    private List<Predicate<Publicacion>> filtrosOpcionales;
+    private final String ciudad;
+    private final Periodo periodo;
+    private final List<Predicate<Publicacion>> filtrosOpcionales;
 
     public Busqueda(String ciudad, LocalDate fechaEntrada, LocalDate fechaSalida) {
         this.ciudad = ciudad;
-        this.fechaEntrada = fechaEntrada;
-        this.fechaSalida = fechaSalida;
+        this.periodo = new Periodo(fechaEntrada, fechaSalida);
         filtrosOpcionales = new ArrayList<>();
     }
 
     public Busqueda conPrecioMinimo(Precio precio) {
-        filtrosOpcionales.add(p -> precio.getPrecio() <= p.getPrecio(fechaEntrada, fechaSalida).getPrecio());
+        filtrosOpcionales.add(p -> precio.getPrecio() <= p.getPrecio(periodo).getPrecio());
         return this;
     }
 
     public Busqueda conPrecioMaximo(Precio precio) {
-        filtrosOpcionales.add(p -> precio.getPrecio() >= p.getPrecio(fechaEntrada, fechaSalida).getPrecio());
+        filtrosOpcionales.add(p -> precio.getPrecio() >= p.getPrecio(periodo).getPrecio());
         return this;
     }
 
@@ -38,7 +36,7 @@ public class Busqueda {
     public List<Publicacion> efectuarBusqueda(List<Publicacion> publicaciones) {
         Stream<Publicacion> listaFiltrada = publicaciones.stream()
                                                         .filter(p -> p.getCiudad().equals(ciudad))
-                                                        .filter(p -> !p.estaReservadaEnFechas(fechaEntrada, fechaSalida));
+                                                        .filter(p -> !p.estaReservadaEnFechas(periodo));
         for(Predicate<Publicacion> filtro : filtrosOpcionales){
             listaFiltrada = listaFiltrada.filter(filtro);
         }

@@ -6,26 +6,28 @@ public class Reserva implements EstadoReserva {
 
     private EstadoReserva estado;
     private final Inquilino inquilino;
-    private final LocalDate fechaDesde;
-    private final LocalDate fechaHasta;
+    private final Periodo periodo;
     private final FormaDePago formaDePago;
     private final Publicacion publicacion;
 
-    public Reserva(Inquilino inquilino, LocalDate fechaDesde, LocalDate fechaHasta, FormaDePago formaDePago, Publicacion publicacion) {
+    public Reserva(Inquilino inquilino, Periodo periodo, FormaDePago formaDePago, Publicacion publicacion) {
         this.inquilino = inquilino;
-        this.fechaDesde = fechaDesde;
-        this.fechaHasta = fechaHasta;
+        this.periodo = periodo;
         this.formaDePago = formaDePago;
         this.publicacion = publicacion;
         this.estado = new ReservaPendiente(this);
     }
 
     public LocalDate getFechaDesde(){
-        return fechaDesde;
+        return periodo.getFechaDesde();
     }
 
     public LocalDate getFechaHasta(){
-        return fechaHasta;
+        return periodo.getFechaHasta();
+    }
+
+    public Periodo getPeriodo(){
+        return periodo;
     }
 
     public Inquilino getInquilino() {
@@ -69,7 +71,7 @@ public class Reserva implements EstadoReserva {
         estado.cancelarReserva();
     }
 
-    public boolean seSuperponeConElPeriodo(LocalDate fechaDesde, LocalDate fechaHasta) {
-        return !fechaDesde.isAfter(this.getFechaHasta()) && !fechaHasta.isBefore(this.getFechaDesde());
+    public boolean seSuperponeConElPeriodo(Periodo periodo) {
+        return this.periodo.seSuperponeCon(periodo);
     }
 }

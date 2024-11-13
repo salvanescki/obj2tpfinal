@@ -30,6 +30,7 @@ public class PublicacionTest {
     LocalDate diaDesde;
     LocalDate diaHasta;
     Periodo mockPeriodo;
+    Periodo periodoDeFechas;
 
     @BeforeEach
     void setUp() {
@@ -62,12 +63,21 @@ public class PublicacionTest {
         diaDesde = LocalDate.of(2024, 12, 1);
         diaHasta = LocalDate.of(2024, 12, 15);
 
+        periodoDeFechas = crearPeriodoMockDeFechas(diaDesde, diaHasta);
+
         mockPeriodo = mock(Periodo.class);
         when(mockPeriodo.seSuperponeCon(mockPeriodo)).thenReturn(true);
         for(LocalDate dia = diaDesde; !dia.isAfter(diaHasta); dia = dia.plusDays(1)){
             when(mockPeriodo.estaDentroDelPeriodo(dia)).thenReturn(true);
             when(mockPeriodo.getPrecio()).thenReturn(new Precio(2000));
         }
+    }
+
+    private Periodo crearPeriodoMockDeFechas(LocalDate fechaInicio, LocalDate fechaFin){
+        Periodo periodo = mock(Periodo.class);
+        when(periodo.getFechaDesde()).thenReturn(fechaInicio);
+        when(periodo.getFechaHasta()).thenReturn(fechaFin);
+        return periodo;
     }
 
     @Test
@@ -134,7 +144,7 @@ public class PublicacionTest {
     void getPrecioEnElCasoNormalDebeDevolverElPrecioBasePorLaCantidadDeDiasTest() {
         int cantDeDias = 15;
         assertEquals(dummyPrecio.getPrecio() * cantDeDias,
-                publicacion.getPrecio(diaDesde, diaHasta).getPrecio());
+                publicacion.getPrecio(periodoDeFechas).getPrecio());
     }
 
     @Test
@@ -166,7 +176,7 @@ public class PublicacionTest {
     void getPrecioEnUnPeriodoDefinidoDebeDevolverElPrecioDeDichoPeriodoPorLaCantidadDeDiasTest() {
         int cantDeDias = 15;
         publicacion.definirPeriodo(mockPeriodo);
-        assertEquals(2000 * cantDeDias, publicacion.getPrecio(diaDesde, diaHasta).getPrecio());
+        assertEquals(2000 * cantDeDias, publicacion.getPrecio(periodoDeFechas).getPrecio());
     }
 
     @Test
@@ -176,22 +186,25 @@ public class PublicacionTest {
 
         publicacion.definirPeriodo(mockPeriodo);
 
+        Periodo periodo = crearPeriodoMockDeFechas(LocalDate.of(2024, 12, 5), LocalDate.of(2024, 12, 22));
+
         assertEquals(2000 * cantDeDiasEnPeriodo + dummyPrecio.getPrecio() * cantDeDiasFueraDelPeriodo,
-                publicacion.getPrecio(LocalDate.of(2024, 12, 5), LocalDate.of(2024, 12, 22)).getPrecio());
+                publicacion.getPrecio(periodo).getPrecio());
     }
 
     @Test
     void reservarTest() {
         assertEquals(0, publicacion.getReservas().size());
-        publicacion.reservar(inquilino, diaDesde, diaHasta, tarjeta);
+        publicacion.reservar(inquilino, periodoDeFechas, tarjeta);
         verify(inquilino).agregarReserva(any(Reserva.class));
         assertEquals(1, publicacion.getReservas().size());
     }
 
     @Test
     void reservarConFechaDesdePosteriorAFechaHastaLanzaExcepcionTest() {
+        Periodo periodoInvalido = crearPeriodoMockDeFechas(diaHasta, diaDesde);
         FechasInvalidasException excepcion = assertThrows(FechasInvalidasException.class, ()->{
-            publicacion.reservar(inquilino, diaHasta, diaDesde, tarjeta);
+            publicacion.reservar(inquilino, periodoInvalido, tarjeta);
         });
         assertTrue(excepcion.getMessage().contains("Las fechas introducidas no son válidas."));
     }
@@ -202,42 +215,43 @@ public class PublicacionTest {
         publicacion.setNotificador(mockNotificador);
 
         Reserva reserva = mock(Reserva.class);
-        when(reserva.seSuperponeConElPeriodo(diaDesde, diaHasta)).thenReturn(true);
-        if(!publicacion.estaReservadaEnFechas(diaDesde,diaHasta)){
+        when(reserva.seSuperponeConElPeriodo(periodoDeFechas)).thenReturn(true);
+        if(!publicacion.estaReservadaEnFechas(periodoDeFechas)){
             mockNotificador.notificarReserva(anyString(), any());
         }
         publicacion.getReservas().add(reserva);
 
-        publicacion.reservar(inquilino, diaDesde, diaHasta, tarjeta);
+        publicacion.reservar(inquilino, periodoDeFechas, tarjeta);
 
         verify(mockNotificador, atMost(1)).notificarReserva(anyString(), any());
     }
 
     @Test
     void estaReservadaEnFechasTest() {
-        assertFalse(publicacion.estaReservadaEnFechas(diaDesde, diaHasta));
+        assertFalse(publicacion.estaReservadaEnFechas(periodoDeFechas));
 
         Reserva reserva = mock(Reserva.class);
-        when(reserva.seSuperponeConElPeriodo(diaDesde, diaHasta)).thenReturn(true);
+        when(reserva.seSuperponeConElPeriodo(periodoDeFechas)).thenReturn(true);
         publicacion.getReservas().add(reserva);
 
-        assertTrue(publicacion.estaReservadaEnFechas(diaDesde, diaHasta));
+        assertTrue(publicacion.estaReservadaEnFechas(periodoDeFechas));
     }
 
     @Test
     void estaReservadaEnFechasAunqueSoloCoincidaUnDiaTest() {
-        assertFalse(publicacion.estaReservadaEnFechas(diaDesde, diaHasta));
+        assertFalse(publicacion.estaReservadaEnFechas(periodoDeFechas));
 
         Reserva reserva = mock(Reserva.class);
-        when(reserva.seSuperponeConElPeriodo(diaHasta, LocalDate.of(2024, 12, 24))).thenReturn(true);
+        Periodo periodo = crearPeriodoMockDeFechas(diaHasta, LocalDate.of(2024, 12, 24));
+        when(reserva.seSuperponeConElPeriodo(periodo)).thenReturn(true);
         publicacion.getReservas().add(reserva);
 
-        assertTrue(publicacion.estaReservadaEnFechas(diaHasta, LocalDate.of(2024, 12, 24)));
+        assertTrue(publicacion.estaReservadaEnFechas(periodo));
     }
 
     @Test
     void cancelarReservaTest() {
-        publicacion.reservar(inquilino, diaDesde, diaHasta, tarjeta);
+        publicacion.reservar(inquilino, periodoDeFechas, tarjeta);
         ArgumentCaptor<Reserva> captor = ArgumentCaptor.forClass(Reserva.class);
         verify(inquilino).agregarReserva(captor.capture());
         Reserva reserva = spy(captor.getValue());
@@ -252,27 +266,29 @@ public class PublicacionTest {
 
         Reserva mockReserva = mock(Reserva.class);
 
-        when(mockReserva.seSuperponeConElPeriodo(diaDesde, diaHasta)).thenReturn(true);
+        when(mockReserva.seSuperponeConElPeriodo(periodoDeFechas)).thenReturn(true);
         when(mockReserva.getFechaDesde()).thenReturn(diaDesde);
         when(mockReserva.getFechaHasta()).thenReturn(diaHasta);
+        when(mockReserva.getPeriodo()).thenReturn(periodoDeFechas);
 
-        assertFalse(publicacion.estaReservadaEnFechas(diaDesde,diaHasta));
+        assertFalse(publicacion.estaReservadaEnFechas(periodoDeFechas));
 
-        if(!publicacion.estaReservadaEnFechas(diaDesde,diaHasta)){
+        if(!publicacion.estaReservadaEnFechas(periodoDeFechas)){
             mockNotificador.notificarReserva(anyString(), any());
         }
         publicacion.getReservas().add(mockReserva);
 
         Reserva mockReservaCondicional = mock(Reserva.class);
 
-        when(mockReservaCondicional.seSuperponeConElPeriodo(diaDesde, diaHasta)).thenReturn(true);
+        when(mockReservaCondicional.seSuperponeConElPeriodo(periodoDeFechas)).thenReturn(true);
         when(mockReservaCondicional.getFechaDesde()).thenReturn(diaDesde);
         when(mockReservaCondicional.getFechaHasta()).thenReturn(diaHasta);
+        when(mockReservaCondicional.getPeriodo()).thenReturn(periodoDeFechas);
         when(mockReservaCondicional.estaPendiente()).thenReturn(true);
 
-        assertTrue(publicacion.estaReservadaEnFechas(diaDesde,diaHasta));
+        assertTrue(publicacion.estaReservadaEnFechas(periodoDeFechas));
 
-        if(!publicacion.estaReservadaEnFechas(diaDesde,diaHasta)){
+        if(!publicacion.estaReservadaEnFechas(periodoDeFechas)){
             mockNotificador.notificarReserva(anyString(), any());
         }
 
@@ -315,7 +331,7 @@ public class PublicacionTest {
             return null;
         }).when(mockNotificador).notificarReserva(anyString(), any());
 
-        publicacion.reservar(inquilino, diaDesde, diaHasta, tarjeta);
+        publicacion.reservar(inquilino, periodoDeFechas, tarjeta);
         verify(listener).notificarReserva("El inmueble " + publicacion.getTipoDeInmueble() +
                 " que te interesa, ha sido reservado desde el 2024-12-01 hasta el 2024-12-15.", publicacion); //El mensaje se manda al reservar, por lo que las fechas se encuentran en ese scope
     }
@@ -368,7 +384,7 @@ public class PublicacionTest {
 
     @Test
     void suscribirNotificacionesDeCancelacionDeReservaTest() {
-        publicacion.reservar(inquilino, diaDesde, diaHasta, tarjeta);
+        publicacion.reservar(inquilino, periodoDeFechas, tarjeta);
         Notificador mockNotificador = mock(Notificador.class);
         publicacion.setNotificador(mockNotificador);
         Listener listener = mock();

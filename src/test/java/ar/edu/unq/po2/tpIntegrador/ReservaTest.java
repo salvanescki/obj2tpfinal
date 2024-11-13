@@ -20,6 +20,7 @@ public class ReservaTest {
     private FormaDePago dummyFormaDePago;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
+    private Periodo periodoDeFechas;
 
     @BeforeEach
     void setUp() {
@@ -31,10 +32,19 @@ public class ReservaTest {
         dummyFormaDePago = mock(FormaDePago.class);
         fechaInicio = LocalDate.now();
         fechaFin = fechaInicio.plusDays(10);
-        reserva = spy(new Reserva(dummyInquilino, fechaInicio, fechaFin, dummyFormaDePago, dummyPublicacion));
+        periodoDeFechas = crearPeriodoMockDeFechas(fechaInicio, fechaFin);
+
+        reserva = spy(new Reserva(dummyInquilino, periodoDeFechas, dummyFormaDePago, dummyPublicacion));
 
         when(estadoPendienteMock.estaPendiente()).thenReturn(true);
         reserva.setEstado(estadoPendienteMock);
+    }
+
+    private Periodo crearPeriodoMockDeFechas(LocalDate fechaInicio, LocalDate fechaFin){
+        Periodo periodo = mock(Periodo.class);
+        when(periodo.getFechaDesde()).thenReturn(fechaInicio);
+        when(periodo.getFechaHasta()).thenReturn(fechaFin);
+        return periodo;
     }
 
     @Test
@@ -233,7 +243,11 @@ public class ReservaTest {
         LocalDate nuevaFechaInicio = fechaInicio.plusDays(5);
         LocalDate nuevaFechaFin = fechaFin;
 
-        assertTrue(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
+        Periodo nuevoPeriodoDeFechas = crearPeriodoMockDeFechas(nuevaFechaInicio, nuevaFechaFin);
+
+        when(periodoDeFechas.seSuperponeCon(nuevoPeriodoDeFechas)).thenReturn(true);
+
+        assertTrue(reserva.seSuperponeConElPeriodo(nuevoPeriodoDeFechas));
     }
 
     @Test
@@ -241,7 +255,11 @@ public class ReservaTest {
         LocalDate nuevaFechaInicio = fechaInicio.plusDays(30);
         LocalDate nuevaFechaFin = fechaFin.plusDays(30);
 
-        assertFalse(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
+        Periodo nuevoPeriodoDeFechas = crearPeriodoMockDeFechas(nuevaFechaInicio, nuevaFechaFin);
+
+        when(periodoDeFechas.seSuperponeCon(nuevoPeriodoDeFechas)).thenReturn(false);
+
+        assertFalse(reserva.seSuperponeConElPeriodo(nuevoPeriodoDeFechas));
     }
 
     @Test
@@ -249,7 +267,11 @@ public class ReservaTest {
         LocalDate nuevaFechaInicio = fechaInicio.plusDays(9);
         LocalDate nuevaFechaFin = fechaFin.plusDays(9);
 
-        assertTrue(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
+        Periodo nuevoPeriodoDeFechas = crearPeriodoMockDeFechas(nuevaFechaInicio, nuevaFechaFin);
+
+        when(periodoDeFechas.seSuperponeCon(nuevoPeriodoDeFechas)).thenReturn(true);
+
+        assertTrue(reserva.seSuperponeConElPeriodo(nuevoPeriodoDeFechas));
     }
 
 
