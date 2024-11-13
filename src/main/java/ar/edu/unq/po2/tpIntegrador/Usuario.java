@@ -1,7 +1,6 @@
 package ar.edu.unq.po2.tpIntegrador;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ public class Usuario implements Propietario, Inquilino {
     private LocalDate fechaDeCreacion;
     private final List<Reserva> reservas;
     private final List<Publicacion> publicaciones;
+
 
     public Usuario(String nombre, String email, String telefono) {
         setNombre(nombre);

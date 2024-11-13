@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import javax.naming.spi.ResolveResult;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -35,6 +34,7 @@ public class PublicacionTest {
     @BeforeEach
     void setUp() {
         sitio = mock(SitioWeb.class);
+        Ranking.setSitio(sitio);
         dummyPropietario = mock(Usuario.class);
         dummyTipoDeInmueble = mock(TipoDeInmueble.class);
         dummyFoto = mock(Foto.class);
@@ -488,7 +488,7 @@ public class PublicacionTest {
     @Test
     void puntuarUnaCategoriaInvalidaLanzaExcepcionTest() {
         CategoriaInvalidaException excepcion = assertThrows(CategoriaInvalidaException.class, ()->{
-            publicacion.puntuar(setUpRanking(setUpCheckOutContext(mock(Usuario.class)), 0, "muy buen wi-fi", mock(Categoria.class)));
+            publicacion.puntuar(setUpRanking(setUpCheckOutContext(mock(Usuario.class)), 4, "muy buen wi-fi", mock(Categoria.class)));
         });
         assertTrue(excepcion.getMessage().contains("La categoría ingresada no es válida"));
     }
