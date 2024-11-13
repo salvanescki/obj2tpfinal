@@ -6,8 +6,16 @@ import ar.edu.unq.po2.tpIntegrador.excepciones.PuntajeInvalidoException;
 public class Ranking {
 
     private static SitioWeb sitio;
+    private final Usuario usuario;
+    private final int puntaje;
+    private final String comentario;
+    private final Categoria categoria;
 
     public Ranking(Usuario usuario, int puntaje, String comentario, Categoria categoria) {
+        this.usuario = usuario;
+        this.puntaje = puntaje;
+        this.comentario = comentario;
+        this.categoria = categoria;
     }
 
     public static void setSitio(SitioWeb sitio) {
@@ -36,22 +44,20 @@ public class Ranking {
     }
 
     public Usuario getUsuario(){
-        // TODO: Implementar
-        return null;
+        return usuario;
     }
 
     public int getPuntaje(){
-        // TODO: Implementar
-        return 0;
+        return puntaje;
     }
 
     public String getComentario(){
-        // TODO: Implementar
-        return "";
+
+        return comentario;
     }
 
     public Categoria getCategoria(){
-        // TODO: Implementar
-        return null;
+
+        return categoria;
     }
 }
