@@ -187,7 +187,7 @@ public class Publicacion implements Rankeable {
     }
 
     public void cancelarReserva(Reserva reserva) {
-        politicaDeCancelacion.efectuarCancelacion();
+        politicaDeCancelacion.efectuarCancelacion(reserva);
         reserva.cancelarReserva();
         notificador.notificarCancelacionReserva("El/la "+ tipoDeInmueble + " que te interesa se ha liberado! Corre a reservarlo!", this);
         handleReservaCondicional(reserva.getPeriodo());
