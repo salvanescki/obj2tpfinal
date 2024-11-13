@@ -235,26 +235,9 @@ public class Publicacion implements Rankeable {
         }
     }
 
-    private void validarCategoria(Categoria categoria) {
-        if(!sitio.esCategoriaValida(categoria, this)){
-            throw new CategoriaInvalidaException("La categoría ingresada no es válida");
-        }
-    }
-
-    private boolean puntajeInvalido(int puntaje) {
-        return puntaje < 1 || puntaje > 5;
-    }
-
-    private void validarPuntaje(int puntaje) {
-        if(puntajeInvalido(puntaje)){
-            throw new PuntajeInvalidoException("El puntaje debe ser en una escala del 1 al 5");
-        }
-    }
-
     private void validarRanking(Ranking ranking) {
         validarCheckOut(ranking.getUsuario());
-        validarCategoria(ranking.getCategoria());
-        validarPuntaje(ranking.getPuntaje());
+        Ranking.validarRanking(ranking, this);
     }
 
     @Override
