@@ -48,18 +48,14 @@ public class UsuarioTest {
     }
 
     private List<Object> setUpUsuarioYClockParaTestsDeTiempo(int days, int months, int years){
-        // Establezco una fecha específica y fija para hoy
-        Instant instant = Instant.parse("2024-04-03T00:00:00Z");
+
+        Instant instant = Instant.now();
         Clock fixedClock = Clock.fixed(instant, ZoneId.systemDefault());
 
         Usuario pepe = new Usuario("pepe", "pepe@gmail.com", "011-2345-6789") {
             @Override
             public LocalDate getFechaDeCreacion() {
-                return LocalDate.of(2024, 4, 3)
-                                .minusYears(years)
-                                .minusMonths(months)
-                                .withDayOfMonth(1)
-                                .minusDays(days - 1);
+                return LocalDate.now().minusYears(years).minusMonths(months).minusDays(days);
             }
         };
 
@@ -141,7 +137,7 @@ public class UsuarioTest {
     }
 
     private List<Publicacion> mockPublicacionFactory(int cantidad){
-        List<Publicacion> publicaciones = new ArrayList<Publicacion>();
+        List<Publicacion> publicaciones = new ArrayList<>();
         for(int i = 0; i < cantidad; i++){
             publicaciones.add(mock(Publicacion.class));
         }
@@ -192,7 +188,7 @@ public class UsuarioTest {
     }
 
     private List<Reserva> mockReservaFactory(int cantidad, Inquilino inquilino){
-        List<Reserva> reservas = new ArrayList<Reserva>();
+        List<Reserva> reservas = new ArrayList<>();
         for(int i = 0; i < cantidad; i++){
             reservas.add(reservarPublicacion(mock(Publicacion.class), LocalDate.now(), LocalDate.now(), inquilino));
         }
@@ -211,7 +207,7 @@ public class UsuarioTest {
     @Test
     void getReservasFuturasTest() {
         mockReservaFactory(3, usuarioInquilino);
-        List<Reserva> reservasFuturas = new ArrayList<Reserva>();
+        List<Reserva> reservasFuturas = new ArrayList<>();
         for(int i = 0; i < 4; i++){
             LocalDate fechaFutura = LocalDate.now().plusMonths(i + 1 );
             reservasFuturas.add(reservarPublicacion(mock(Publicacion.class), fechaFutura, fechaFutura.plusDays(15), usuarioInquilino));
@@ -240,8 +236,8 @@ public class UsuarioTest {
 
     @Test
     void getReservasEnCiudadTest() {
-        List<Reserva> reservasEnQuilmes = new ArrayList<Reserva>();
-        List<Reserva> reservasEnVarela = new ArrayList<Reserva>();
+        List<Reserva> reservasEnQuilmes = new ArrayList<>();
+        List<Reserva> reservasEnVarela = new ArrayList<>();
 
         crearReservasEnDosCiudades(usuarioInquilino, "Quilmes", "Varela", reservasEnQuilmes, reservasEnVarela);
 
@@ -251,8 +247,8 @@ public class UsuarioTest {
 
     @Test
     void getCiudadesConReservaTest() {
-        crearReservasEnDosCiudades(usuarioInquilino, "Berazategui", "Lanus", new ArrayList<Reserva>(), new ArrayList<Reserva>());
-        crearReservasEnDosCiudades(usuarioInquilino, "Quilmes", "Lanus", new ArrayList<Reserva>(), new ArrayList<Reserva>());
+        crearReservasEnDosCiudades(usuarioInquilino, "Berazategui", "Lanus", new ArrayList<>(), new ArrayList<>());
+        crearReservasEnDosCiudades(usuarioInquilino, "Quilmes", "Lanus", new ArrayList<>(), new ArrayList<>());
         assertTrue(usuarioInquilino.getCiudadesConReservas().contains("Berazategui"));
         assertTrue(usuarioInquilino.getCiudadesConReservas().contains("Lanus"));
         assertTrue(usuarioInquilino.getCiudadesConReservas().contains("Quilmes"));
@@ -306,44 +302,44 @@ public class UsuarioTest {
 
     @Test
     void puntuarInquilinoSinHaberHechoCheckOutLanzaExcepcionTest() {
-        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->{
-            usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 5, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)));
-        });
+        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->
+                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 5, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)))
+        );
         assertTrue(excepcion.getMessage().contains("No se puede rankear antes de hacer el check-out"));
     }
 
     @Test
     void puntuarPropietarioSinHaberHechoCheckOutLanzaExcepcionTest() {
-        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->{
-            usuarioPropietario.puntuar(setUpRanking(usuarioInquilino, 5, "Muy buen propietario", setUpCategoriaValida(usuarioInquilino)));
-        });
+        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->
+                usuarioPropietario.puntuar(setUpRanking(usuarioInquilino, 5, "Muy buen propietario", setUpCategoriaValida(usuarioInquilino)))
+        );
         assertTrue(excepcion.getMessage().contains("No se puede rankear antes de hacer el check-out"));
     }
 
     @Test
     void puntuarConUnPuntajeMayorACincoLanzaExcepcionTest() {
         setUpCheckOutContext(usuarioInquilino, usuarioPropietario);
-        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->{
-            usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 10, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)));
-        });
+        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->
+                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 10, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)))
+        );
         assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
     }
 
     @Test
     void puntuarConUnPuntajeMenorAUnoLanzaExcepcionTest() {
         setUpCheckOutContext(usuarioInquilino, usuarioPropietario);
-        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->{
-            usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 0, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)));
-        });
+        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->
+                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 0, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)))
+        );
         assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
     }
 
     @Test
     void puntuarUnaCategoriaInvalidaLanzaExcepcionTest() {
         setUpCheckOutContext(usuarioInquilino, usuarioPropietario);
-        CategoriaInvalidaException excepcion = assertThrows(CategoriaInvalidaException.class, ()->{
-            usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 5, "Muy buen cliente", mock(Categoria.class)));
-        });
+        CategoriaInvalidaException excepcion = assertThrows(CategoriaInvalidaException.class, ()->
+                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 5, "Muy buen cliente", mock(Categoria.class)))
+        );
         assertTrue(excepcion.getMessage().contains("La categoría ingresada no es válida"));
     }
 
