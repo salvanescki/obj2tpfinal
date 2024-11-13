@@ -5,14 +5,22 @@ public class Categoria {
     private String categoria;
 
     public Categoria(String categoria) {
-        this.categoria = TextoNormalizado.normalizarTexto(categoria);
+        setCategoria(categoria);
     }
 
     public String getCategoria() {
-        return TextoNormalizado.normalizarTexto(categoria);
+        return categoria;
     }
 
     public void setCategoria(String categoria) {
         this.categoria = TextoNormalizado.normalizarTexto(categoria);
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(this == o) return true;
+        if(this.getClass() != o.getClass()) return false;
+        Categoria otro = (Categoria) o;
+        return this.categoria.equals(otro.getCategoria());
     }
 }
