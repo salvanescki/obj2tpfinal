@@ -1,5 +1,7 @@
 package ar.edu.unq.po2.tpIntegrador;
 
-public interface PoliticaDeCancelacion {
-    void efectuarCancelacion();
+import java.util.List;
+
+public interface PoliticaDeCancelacion{
+    void efectuarCancelacion(Reserva reserva);
 }

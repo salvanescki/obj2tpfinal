@@ -17,6 +17,7 @@ public class Usuario implements Propietario, Inquilino {
     private final List<Reserva> reservas;
     private final List<Publicacion> publicaciones;
     private final List<Ranking> rankings;
+    private final List<Pagable> pagosPendientes;
 
     public Usuario(String nombre, String email, String telefono) {
         setNombre(nombre);
@@ -26,6 +27,7 @@ public class Usuario implements Propietario, Inquilino {
         reservas = new ArrayList<Reserva>();
         publicaciones = new ArrayList<Publicacion>();
         rankings = new ArrayList<Ranking>();
+        pagosPendientes = new ArrayList<Pagable>();
     }
 
     public String getNombre() {
@@ -116,6 +118,11 @@ public class Usuario implements Propietario, Inquilino {
         return (int) reservas.stream()
                              .filter(Reserva::estaAprobada)
                              .count();
+    }
+
+    @Override
+    public void agregarPagoPendiente(Pagable pagable) {
+        pagosPendientes.add(pagable);
     }
 
     @Override

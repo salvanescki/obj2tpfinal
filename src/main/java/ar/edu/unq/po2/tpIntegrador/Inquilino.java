@@ -9,4 +9,5 @@ public interface Inquilino extends Rankeable {
     List<Reserva> getReservasEnCiudad(String ciudad);
     List<String> getCiudadesConReservas();
     int getCantidadDeVecesQueAlquilo();
+    void agregarPagoPendiente(Pagable pagable);
 }
