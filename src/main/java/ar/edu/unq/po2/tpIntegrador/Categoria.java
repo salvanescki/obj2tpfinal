@@ -16,6 +16,10 @@ public class Categoria {
         this.categoria = TextoNormalizado.normalizarTexto(categoria);
     }
 
+    public String getTipoDeCategoria(){
+        return "Sin tipo";
+    }
+
     @Override
     public boolean equals(Object o){
         if(this == o) return true;
