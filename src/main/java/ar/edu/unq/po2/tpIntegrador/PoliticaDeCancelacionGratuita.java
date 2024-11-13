@@ -5,7 +5,9 @@ import java.time.LocalDate;
 public class PoliticaDeCancelacionGratuita implements PoliticaDeCancelacion {
 
     private boolean esCancelacionGratuita(Reserva reserva){
-        return LocalDate.now().isBefore(reserva.getFechaDesde().minusDays(10));
+        LocalDate ahora = LocalDate.now();
+        LocalDate diezDiasAntesDeReserva = reserva.getFechaDesde().minusDays(10);
+        return ahora.isBefore(diezDiasAntesDeReserva) || ahora.isEqual(diezDiasAntesDeReserva);
     }
 
     private Precio precioEquivalenteADosDiasDeReserva(Reserva reserva){
@@ -15,8 +17,7 @@ public class PoliticaDeCancelacionGratuita implements PoliticaDeCancelacion {
 
     @Override
     public void efectuarCancelacion(Reserva reserva) {
-        if(!esCancelacionGratuita(reserva)){
-            reserva.getInquilino().agregarPagoPendiente(new Deuda(precioEquivalenteADosDiasDeReserva(reserva)));
-        }
+        if(esCancelacionGratuita(reserva)) return;
+        reserva.getInquilino().agregarPagoPendiente(new Deuda(precioEquivalenteADosDiasDeReserva(reserva)));
     }
 }

@@ -93,4 +93,9 @@ public class PeriodoTest {
         assertTrue(periodoConPrecio.seSuperponeCon(new Periodo(enCuatroMeses, enCuatroMeses.plusMonths(4))));
         assertTrue(periodoConPrecio.seSuperponeCon(new Periodo(ahora, enDosMeses)));
     }
+
+    @Test
+    void periodoSonIgualesSiCompartenAmbasFechasTest() {
+        assertEquals(periodoConPrecio, new Periodo(enDosMeses, enCuatroMeses));
+    }
 }
