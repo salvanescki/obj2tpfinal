@@ -2,46 +2,78 @@ package ar.edu.unq.po2.tpIntegrador;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import ar.edu.unq.po2.tpIntegrador.excepciones.CategoriaInvalidaException;
+import ar.edu.unq.po2.tpIntegrador.excepciones.PuntajeInvalidoException;
+import org.junit.jupiter.api.BeforeEach;
+import static org.mockito.Mockito.*;
 
-class RankingTest {
+public class RankingTest {
 
-        @Test
-        void testConstructorYGetters() {
-            Usuario usuario = new Usuario();
-            Categoria categoria = new Categoria("Tecnología");
-            int puntaje = 4;
-            String comentario = "Muy buen producto";
+    private SitioWeb sitioMock;
+    private Usuario usuario;
+    private Categoria categoria;
+    private Rankeable rankeable;
 
-            Ranking ranking = new Ranking(usuario, puntaje, comentario, categoria);
+    @BeforeEach
+    void setUp() {
+        sitioMock = mock(SitioWeb.class);
+        usuario = mock(Usuario.class);
+        categoria = mock(Categoria.class);
+        rankeable = mock(Rankeable.class);
+        Ranking.setSitio(sitioMock);
+    }
 
-            assertEquals(usuario, ranking.getUsuario());
-            assertEquals(puntaje, ranking.getPuntaje());
-            assertEquals(comentario, ranking.getComentario());
-            assertEquals(categoria, ranking.getCategoria());
-        }
+    @Test
+    void testCrearRankingConDatosValidos() {
+        Ranking ranking = new Ranking(usuario, 4, "Buen servicio", categoria);
 
-        @Test
-        void testComentarioConNormalizacion() {
-            Usuario usuario = new Usuario();
-            Categoria categoria = new Categoria("Servicios");
-            String comentario = "  EXCELENTE CALIDAD!  ";
+        assertEquals(usuario, ranking.getUsuario());
+        assertEquals(4, ranking.getPuntaje());
+        assertEquals("Buen servicio", ranking.getComentario());
+        assertEquals(categoria, ranking.getCategoria());
+    }
 
-            Ranking ranking = new Ranking(usuario, 5, comentario, categoria);
+    @Test
+    void testValidarPuntajeLanzaExcepcionCuandoEsMenorA1() {
+        Ranking ranking = new Ranking(usuario, 0, "Comentario", categoria);
 
-            assertEquals("excelente calidad!", TextoNormalizado.normalizarTexto(ranking.getComentario()));
-        }
+        assertThrows(PuntajeInvalidoException.class, () ->
+            Ranking.validarRanking(ranking, rankeable));
+    }
 
-        @Test
-        void testPuntajeEnLimitesValidos() {
-            Usuario usuario = new Usuario();
-            Categoria categoria = new Categoria("Productos");
+    @Test
+    void testValidarPuntajeLanzaExcepcionCuandoEsMayorA5() {
+        Ranking ranking = new Ranking(usuario, 6, "Comentario", categoria);
 
-            // Testeamos con puntaje mínimo (0)
-            Ranking rankingMin = new Ranking(usuario, 0, "Malo", categoria);
-            assertEquals(0, rankingMin.getPuntaje());
+        assertThrows(PuntajeInvalidoException.class, () ->
+            Ranking.validarRanking(ranking, rankeable));
+    }
 
-            // Testeamos con puntaje máximo (5)
-            Ranking rankingMax = new Ranking(usuario, 5, "Excelente", categoria);
-            assertEquals(5, rankingMax.getPuntaje());
-        }
+    @Test
+    void testValidarPuntajeNoLanzaExcepcionParaPuntajeValido() {
+        when(sitioMock.esCategoriaValida(categoria, rankeable)).thenReturn(true);
+        Ranking ranking = new Ranking(usuario, 3, "Comentario", categoria);
+
+        assertDoesNotThrow(() ->
+            Ranking.validarRanking(ranking, rankeable));
+    }
+
+    @Test
+    void testValidarCategoriaLanzaExcepcionCuandoEsInvalida() {
+        when(sitioMock.esCategoriaValida(categoria, rankeable)).thenReturn(false);
+        Ranking ranking = new Ranking(usuario, 3, "Comentario", categoria);
+
+        assertThrows(CategoriaInvalidaException.class, () ->
+            Ranking.validarRanking(ranking, rankeable));
+    }
+
+    @Test
+    void testValidarCategoriaNoLanzaExcepcionCuandoEsValida() {
+        when(sitioMock.esCategoriaValida(categoria, rankeable)).thenReturn(true);
+        Ranking ranking = new Ranking(usuario, 3, "Comentario", categoria);
+
+        assertDoesNotThrow(() ->
+            Ranking.validarRanking(ranking, rankeable));
+    }
+
 }
