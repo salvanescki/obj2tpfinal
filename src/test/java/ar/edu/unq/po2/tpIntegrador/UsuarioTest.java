@@ -273,6 +273,11 @@ public class UsuarioTest {
         assertEquals(2, usuarioInquilino.getCantidadDeVecesQueAlquilo());
     }
 
+    @Test
+    void getTipoTest() {
+        assertEquals("Inquilino", usuarioInquilino.getTipo());
+    }
+
     private Ranking setUpRanking(Usuario usuario, int puntaje, String comentario, Categoria categoria){
         Ranking ranking = mock(Ranking.class);
 

@@ -144,6 +144,11 @@ public class PublicacionTest {
     }
 
     @Test
+    void getTipoTest() {
+        assertEquals("Publicacion", publicacion.getTipo());
+    }
+
+    @Test
     void getPrecioEnElCasoNormalDebeDevolverElPrecioBasePorLaCantidadDeDiasTest() {
         int cantDeDias = 15;
         assertEquals(dummyPrecio.getPrecio() * cantDeDias,
@@ -447,8 +452,8 @@ public class PublicacionTest {
         assertTrue(excepcion.getMessage().contains("El horario de check-out de hoy ya ha pasado, inténtelo mañana"));
     }
 
-    private Categoria setUpCategoriaValida(){
-        Categoria servicios = mock(Categoria.class);
+    private CategoriaPublicacion setUpCategoriaValida(){
+        CategoriaPublicacion servicios = mock(CategoriaPublicacion.class);
         when(sitio.esCategoriaValida(servicios, publicacion)).thenReturn(true);
         return servicios;
     }

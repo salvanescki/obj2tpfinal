@@ -264,6 +264,11 @@ public class Publicacion implements Rankeable {
         return RankingUtils.getPuntajeDeUsuarioEnCategoria(rankings, usuario, categoria);
     }
 
+    @Override
+    public String getTipo() {
+        return "Publicacion";
+    }
+
     public void setNotificador(Notificador notificador){
         this.notificador = notificador;
     }
