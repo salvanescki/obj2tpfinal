@@ -2,9 +2,11 @@ package ar.edu.unq.po2.tpIntegrador;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class NotificadorTest {
+
     private Notificador notificador;
     private Listener sitioAlquileres;
     private Listener app;
@@ -13,7 +15,7 @@ public class NotificadorTest {
 
     @BeforeEach
     void setUp() {
-        notificador = mock(Notificador.class);
+        notificador = new Notificador();
         sitioAlquileres = mock(SitioAlquileres.class);
         app = mock(AppMobile.class);
         publicacion = mock(Publicacion.class);
@@ -36,35 +38,37 @@ public class NotificadorTest {
 
     @Test
     void seNotificaUnaBajaDePrecioTest() {
-        String mensajeBajaDePrecio = "Tu inmueble de interes bajo de precio.";
 
-        doNothing().when(app).notificarBajaDePrecio(mensajeBajaDePrecio, publicacion);
+        notificador.notificarBajaDePrecio("Baja de precios.", publicacion);
 
-        notificador.notificarBajaDePrecio(mensajeBajaDePrecio, publicacion);
-
-        verify(sitioAlquileres).notificarBajaDePrecio(mensajeBajaDePrecio, publicacion);
-        verify(app, never()).notificarBajaDePrecio(mensajeBajaDePrecio, publicacion);
+        verify(sitioAlquileres, times(1)).notificarBajaDePrecio("Baja de precios.", publicacion);
     }
 
 
 
     @Test
     void seNotificaUnaReservaALosInteresadosTest() {
-        String mensajeEsperado = "Tu inmueble de interes ha sido reservado.";
 
-        notificador.notificarReserva(mensajeEsperado, publicacion);
+        notificador.notificarReserva("Reserva.", publicacion);
 
-        verify(app).notificarReserva(mensajeEsperado, publicacion);
-        verify(sitioAlquileres, never()).notificarReserva(mensajeEsperado, publicacion);
+        verify(app).notificarReserva("Reserva.", publicacion);
     }
 
     @Test
     void seNotificaUnaCancelacionALosInteresadosTest() {
-        String mensajeEsperado = "En inmueble de interes se ha cancelado una reserva.";
 
-        notificador.notificarCancelacionReserva(mensajeEsperado, publicacion);
+        notificador.notificarCancelacionReserva("Cancelacion.", publicacion);
 
-        verify(app).notificarCancelacionReserva(mensajeEsperado, publicacion);
-        verify(sitioAlquileres, never()).notificarCancelacionReserva(mensajeEsperado, publicacion);
+        verify(app).notificarCancelacionReserva("Cancelacion.", publicacion);
+    }
+
+    @Test
+    void noSePuedeNotificarSiNoEstaSuscripto() {
+        notificador.desuscribir(app);
+
+        notificador.notificarCancelacionReserva("Cancelacion.", publicacion);
+
+        verify(app, never()).notificarCancelacionReserva("Cancelacion.", publicacion);
+
     }
 }
