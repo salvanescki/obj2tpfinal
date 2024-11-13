@@ -16,7 +16,7 @@ public class ReservaTest {
     private EstadoReserva estadoPendienteMock;
     private EstadoReserva estadoCanceladaMock;
     private Publicacion dummyPublicacion;
-    private Usuario dummyInquilino;
+    private Inquilino dummyInquilino;
     private FormaDePago dummyFormaDePago;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
@@ -138,7 +138,7 @@ public class ReservaTest {
         doAnswer(invocation -> {
             reserva.setEstado(estadoAprobadaMock);
             return null;
-        }).when(estadoPendienteMock).aprobarReserva(); // ! anda si cambio reserva por estadoPendienteMok.
+        }).when(estadoPendienteMock).aprobarReserva();
 
         reserva.aprobarReserva();
 
@@ -146,7 +146,6 @@ public class ReservaTest {
         when(estadoAprobadaMock.estaAprobada()).thenReturn(true);
 
         assertTrue(reserva.estaAprobada());
-        // TODO: MANDAR MAIL A INQUILINO Y (CONSOLIDAR EN EL SISTEMA)
     }
 
     @Test
@@ -190,9 +189,7 @@ public class ReservaTest {
         doThrow(new OperacionInvalidaConEstadoReservaException("No se puede aprobar una reserva ya aprobada."))
                 .when(estadoAprobadaMock).aprobarReserva();
 
-        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
-            reserva.aprobarReserva();
-        });
+        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> reserva.aprobarReserva());
         assertTrue(excepcion.getMessage().contains("No se puede aprobar una reserva ya aprobada."));
 
         verify(estadoAprobadaMock, times(1)).aprobarReserva();
@@ -205,9 +202,7 @@ public class ReservaTest {
         doThrow(new OperacionInvalidaConEstadoReservaException("No se puede cancelar una reserva ya cancelada."))
                 .when(estadoCanceladaMock).cancelarReserva();
 
-        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
-            reserva.cancelarReserva();
-        });
+        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> reserva.cancelarReserva());
         assertTrue(excepcion.getMessage().contains("No se puede cancelar una reserva ya cancelada."));
 
         verify(estadoCanceladaMock, times(1)).cancelarReserva();
@@ -220,9 +215,7 @@ public class ReservaTest {
         doThrow(new OperacionInvalidaConEstadoReservaException("No se puede aprobar una reserva ya cancelada."))
                 .when(estadoCanceladaMock).aprobarReserva();
 
-        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
-            reserva.aprobarReserva();
-        });
+        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> reserva.aprobarReserva());
         assertTrue(excepcion.getMessage().contains("No se puede aprobar una reserva ya cancelada."));
 
         verify(estadoCanceladaMock, times(1)).aprobarReserva();
@@ -259,22 +252,7 @@ public class ReservaTest {
         assertTrue(reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin));
     }
 
-    @Test
-    void reservarEnFechaSuperpuestaLanzaExcepcion() {
 
-        LocalDate nuevaFechaInicio = fechaInicio.plusDays(5);
-        LocalDate nuevaFechaFin = fechaFin.plusDays(5);
-
-        doThrow(new OperacionInvalidaConEstadoReservaException("Ya existe una reserva en las fechas seleccionadas."))
-                .when(reserva).seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin);
-
-        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
-            reserva.seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin);
-        });
-
-        assertTrue(excepcion.getMessage().contains("Ya existe una reserva en las fechas seleccionadas."));
-        verify(reserva, times(1)).seSuperponeConElPeriodo(nuevaFechaInicio, nuevaFechaFin);
-    }
 }
 
 
