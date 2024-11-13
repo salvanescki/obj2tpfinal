@@ -34,11 +34,18 @@ public class BusquedaTest {
         quintaEnQuilmes = mock(Publicacion.class);
         when(quintaEnQuilmes.getCiudad()).thenReturn("Quilmes");
 
-        when(casaEnQuilmes.getPrecio(ahora, enQuinceDias)).thenReturn(new Precio(10000));
-        when(dptoEnMdp.getPrecio(ahora, enQuinceDias)).thenReturn(new Precio(30000));
-        when(quintaEnQuilmes.getPrecio(ahora, enQuinceDias)).thenReturn(new Precio(20000));
+        when(casaEnQuilmes.getPrecio(any())).thenReturn(new Precio(10000));
+        when(dptoEnMdp.getPrecio(any())).thenReturn(new Precio(30000));
+        when(quintaEnQuilmes.getPrecio(any())).thenReturn(new Precio(20000));
 
         publicaciones.addAll(Arrays.asList(casaEnQuilmes, dptoEnMdp, quintaEnQuilmes));
+    }
+
+    private Periodo crearPeriodoMockDeFechas(LocalDate fechaInicio, LocalDate fechaFin){
+        Periodo periodo = mock(Periodo.class);
+        when(periodo.getFechaDesde()).thenReturn(fechaInicio);
+        when(periodo.getFechaHasta()).thenReturn(fechaFin);
+        return periodo;
     }
 
     @Test
@@ -51,8 +58,8 @@ public class BusquedaTest {
 
     @Test
     void busquedaPorCiudadPublicacionesYaReservadasEnFechasNoAparecenTest() {
-        when(dptoEnMdp.estaReservadaEnFechas(ahora, enQuinceDias)).thenReturn(true);
-        when(casaEnQuilmes.estaReservadaEnFechas(ahora, enQuinceDias)).thenReturn(true);
+        when(dptoEnMdp.estaReservadaEnFechas(any())).thenReturn(true);
+        when(casaEnQuilmes.estaReservadaEnFechas(any())).thenReturn(true);
 
         assertTrue(new Busqueda("Mar del Plata", ahora, enQuinceDias).efectuarBusqueda(publicaciones).isEmpty());
         assertEquals(List.of(quintaEnQuilmes), new Busqueda("Quilmes", ahora, enQuinceDias).efectuarBusqueda(publicaciones));

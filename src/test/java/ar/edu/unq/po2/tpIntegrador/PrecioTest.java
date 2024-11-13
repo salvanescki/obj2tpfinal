@@ -137,4 +137,10 @@ public class PrecioTest {
         assertEquals(0, precioA.compareTo(precioIdenticoA));
         assertEquals(1, precioB.compareTo(precioA));
     }
+
+    @Test
+    void equalsTest() {
+        assertEquals(precioA, precioA);
+        assertEquals(new Precio(40), new Precio(40.0));
+    }
 }

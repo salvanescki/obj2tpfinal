@@ -30,6 +30,13 @@ public class UsuarioTest {
         Ranking.setSitio(sitio);
     }
 
+    private Periodo crearPeriodoMockDeFechas(LocalDate fechaInicio, LocalDate fechaFin){
+        Periodo periodo = mock(Periodo.class);
+        when(periodo.getFechaDesde()).thenReturn(fechaInicio);
+        when(periodo.getFechaHasta()).thenReturn(fechaFin);
+        return periodo;
+    }
+
     // ------------------------------------------ Tests Usuario --------------------------------------------------------
 
     @Test
@@ -178,12 +185,12 @@ public class UsuarioTest {
         doAnswer(invocation -> {
             inquilino.agregarReserva(reserva);
             return null;
-        }).when(publicacion).reservar(any(), any(), any(), any());
+        }).when(publicacion).reservar(any(), any(), any());
         when(reserva.getFechaDesde()).thenReturn(fechaDesde);
         when(reserva.getFechaHasta()).thenReturn(fechaHasta);
         when(reserva.estaAprobada()).thenReturn(false);
         when(reserva.getPublicacion()).thenReturn(publicacion);
-        publicacion.reservar(inquilino, fechaDesde, fechaHasta, mock(FormaDePago.class));
+        publicacion.reservar(inquilino, crearPeriodoMockDeFechas(fechaDesde, fechaHasta), mock(FormaDePago.class));
         return reserva;
     }
 
