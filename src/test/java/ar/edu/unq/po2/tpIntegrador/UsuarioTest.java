@@ -1,14 +1,10 @@
 package ar.edu.unq.po2.tpIntegrador;
 
-import net.bytebuddy.asm.Advice;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
-import org.mockito.MockedStatic;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,35 +43,87 @@ public class UsuarioTest {
         assertEquals("011-4253-6189", usuario.getTelefono());
     }
 
+    private List<Object> setUpUsuarioYClockParaTestsDeTiempo(int days, int months, int years){
+        // Establezco una fecha específica y fija para hoy
+        Instant instant = Instant.parse("2024-04-03T00:00:00Z");
+        Clock fixedClock = Clock.fixed(instant, ZoneId.systemDefault());
+
+        Usuario pepe = new Usuario("pepe", "pepe@gmail.com", "011-2345-6789") {
+            @Override
+            public LocalDate getFechaDeCreacion() {
+                return LocalDate.of(2024, 4, 3)
+                                .minusYears(years)
+                                .minusMonths(months)
+                                .withDayOfMonth(1)
+                                .minusDays(days - 1);
+            }
+        };
+
+        return List.of(pepe, fixedClock);
+    }
+
     @Test
-    void getTiempoDeAntiguedadTest() {
+    public void getTiempoDeAntiguedadRecienCreadoTest() {
+        List<Object> args = setUpUsuarioYClockParaTestsDeTiempo(0, 0, 0);
+        Usuario pepe = (Usuario) args.get(0);
+        Clock clock = (Clock) args.get(1);
+        assertEquals("Recien creado", pepe.getTiempoDeAntiguedad(LocalDate.now(clock)));
+    }
 
-        LocalDate fechaCreacion = LocalDate.of(2024, 1, 1);
+    @Test
+    public void getTiempoDeAntiguedadDiasTest() {
+        List<Object> args = setUpUsuarioYClockParaTestsDeTiempo(3, 0, 0);
+        Usuario pepe = (Usuario) args.get(0);
+        Clock clock = (Clock) args.get(1);
+        assertEquals("3 dias", pepe.getTiempoDeAntiguedad(LocalDate.now(clock)));
+    }
 
-        try (MockedStatic<LocalDate> mockedLocalDate = mockStatic(LocalDate.class)) {
-            mockedLocalDate.when(LocalDate::now).thenReturn(fechaCreacion);
-            Usuario usuarioEjemplo = new Usuario("Usuario ejemplo", "usuarioEjemplo@gmail.com", "011-4545-0203");
-            assertEquals("Recien creado", usuarioEjemplo.getTiempoDeAntiguedad());
+    @Test
+    public void getTiempoDeAntiguedadMesesTest() {
+        List<Object> args = setUpUsuarioYClockParaTestsDeTiempo(0, 2, 0);
+        Usuario pepe = (Usuario) args.get(0);
+        Clock clock = (Clock) args.get(1);
+        assertEquals("2 meses", pepe.getTiempoDeAntiguedad(LocalDate.now(clock)));
+    }
 
-            // Simulo que pasan 5 días
-            LocalDate fechaPosterior = fechaCreacion.plusDays(5);
-            mockedLocalDate.when(LocalDate::now).thenReturn(fechaPosterior);
+    @Test
+    public void getTiempoDeAntiguedadMesesDiasTest() {
+        List<Object> args = setUpUsuarioYClockParaTestsDeTiempo(3, 2, 0);
+        Usuario pepe = (Usuario) args.get(0);
+        Clock clock = (Clock) args.get(1);
+        assertEquals("2 meses, 3 dias", pepe.getTiempoDeAntiguedad(LocalDate.now(clock)));
+    }
 
-            assertEquals("5 días", usuario.getTiempoDeAntiguedad());
+    @Test
+    public void getTiempoDeAntiguedadAñosTest() {
+        List<Object> args = setUpUsuarioYClockParaTestsDeTiempo(0, 0, 4);
+        Usuario pepe = (Usuario) args.get(0);
+        Clock clock = (Clock) args.get(1);
+        assertEquals("4 años", pepe.getTiempoDeAntiguedad(LocalDate.now(clock)));
+    }
 
-            // Simulo que pasan 2 meses
-            LocalDate fechaFutura = fechaPosterior.plusMonths(2);
-            mockedLocalDate.when(LocalDate::now).thenReturn(fechaFutura);
+    @Test
+    public void getTiempoDeAntiguedadAñosDiasTest() {
+        List<Object> args = setUpUsuarioYClockParaTestsDeTiempo(3, 0, 4);
+        Usuario pepe = (Usuario) args.get(0);
+        Clock clock = (Clock) args.get(1);
+        assertEquals("4 años, 3 dias", pepe.getTiempoDeAntiguedad(LocalDate.now(clock)));
+    }
 
-            assertEquals("2 meses, 5 días", usuario.getTiempoDeAntiguedad());
+    @Test
+    public void getTiempoDeAntiguedadAñosMesesTest() {
+        List<Object> args = setUpUsuarioYClockParaTestsDeTiempo(0, 3, 4);
+        Usuario pepe = (Usuario) args.get(0);
+        Clock clock = (Clock) args.get(1);
+        assertEquals("4 años, 3 meses", pepe.getTiempoDeAntiguedad(LocalDate.now(clock)));
+    }
 
-            // Simulo que pasa 1 año
-
-            LocalDate fechaLejana = fechaFutura.plusYears(1);
-            mockedLocalDate.when(LocalDate::now).thenReturn(fechaLejana);
-
-            assertEquals("1 año, 2 meses, 5 días", usuario.getTiempoDeAntiguedad());
-        }
+    @Test
+    public void getTiempoDeAntiguedadAñosMesesDiasTest() {
+        List<Object> args = setUpUsuarioYClockParaTestsDeTiempo(3, 2, 4);
+        Usuario pepe = (Usuario) args.get(0);
+        Clock clock = (Clock) args.get(1);
+        assertEquals("4 años, 2 meses, 3 dias", pepe.getTiempoDeAntiguedad(LocalDate.now(clock)));
     }
 
     // ------------------------------------------ Tests Propietario ----------------------------------------------------
@@ -130,10 +178,11 @@ public class UsuarioTest {
         doAnswer(invocation -> {
             inquilino.agregarReserva(reserva);
             return null;
-        }).when(publicacion).reservar(inquilino, fechaDesde, fechaHasta, any());
+        }).when(publicacion).reservar(any(), any(), any(), any());
         when(reserva.getFechaDesde()).thenReturn(fechaDesde);
         when(reserva.getFechaHasta()).thenReturn(fechaHasta);
         when(reserva.estaAprobada()).thenReturn(false);
+        when(reserva.getPublicacion()).thenReturn(publicacion);
         publicacion.reservar(inquilino, fechaDesde, fechaHasta, mock(FormaDePago.class));
         return reserva;
     }
@@ -175,7 +224,7 @@ public class UsuarioTest {
         when(dptoCiudadDos.getCiudad()).thenReturn(ciudadDos);
 
         Publicacion chaleCiudadUno = mock(Publicacion.class);
-        when(dptoCiudadUno.getCiudad()).thenReturn(ciudadUno);
+        when(chaleCiudadUno.getCiudad()).thenReturn(ciudadUno);
 
         LocalDate fechaFutura = LocalDate.now().plusMonths(2);
 
@@ -216,4 +265,178 @@ public class UsuarioTest {
         reservas.addAll(mockReservaFactory(4, usuarioInquilino));
         assertEquals(2, usuarioInquilino.getCantidadDeVecesQueAlquilo());
     }
+
+//    private Ranking setUpRanking(Usuario usuario, int puntaje, String comentario, Categoria categoria){
+//        Ranking ranking = mock(Ranking.class);
+//
+//        when(ranking.getUsuario()).thenReturn(usuario);
+//        when(ranking.getPuntaje()).thenReturn(puntaje);
+//        when(ranking.getComentario()).thenReturn(comentario);
+//        when(ranking.getCategoria()).thenReturn(categoria);
+//
+//        return ranking;
+//    }
+//
+//    private Inquilino setUpCheckOutContext(Inquilino inquilino) {
+//        Reserva reserva = mock(Reserva.class);
+//        when(reserva.estaAprobada()).thenReturn(true);
+//        when(reserva.getInquilino()).thenReturn(inquilino);
+//        when(reserva.getPublicacion().fueHechoElCheckOut(inquilino)).thenReturn(true);
+//        return inquilino;
+//    }
+//
+//    private Categoria setUpCategoriaValida(Usuario usuario){
+//        Categoria pagoEnTermino = mock(Categoria.class);
+//        when(sitio.esCategoriaValida(pagoEnTermino, usuario)).thenReturn(true);
+//        return pagoEnTermino;
+//    }
+//
+//    @Test
+//    void puntuarAInquilinoTest() {
+//        setUpCheckOutContext(usuarioInquilino).puntuar(setUpRanking((Usuario) usuarioPropietario, 5, "Muy buen cliente", setUpCategoriaValida((Usuario) usuarioInquilino)));
+//    }
+//
+//    @Test
+//    void puntuarSinHaberHechoCheckOutLanzaExcepcionTest() {
+//        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->{
+//            usuarioInquilino.puntuar(setUpRanking((Usuario) usuarioPropietario, 5, "Muy buen cliente", setUpCategoriaValida((Usuario) usuarioInquilino)));
+//        });
+//        assertTrue(excepcion.getMessage().contains("No se puede rankear antes de hacer el check-out"));
+//    }
+//
+//    @Test
+//    void puntuarConUnPuntajeMayorACincoLanzaExcepcionTest() {
+//        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->{
+//            setUpCheckOutContext(usuarioInquilino).puntuar(setUpRanking((Usuario) usuarioPropietario, 10, "Muy buen cliente", setUpCategoriaValida((Usuario) usuarioInquilino)));
+//        });
+//        assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
+//    }
+//
+//    @Test
+//    void puntuarConUnPuntajeMenorAUnoLanzaExcepcionTest() {
+//        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->{
+//            setUpCheckOutContext(usuarioInquilino).puntuar(setUpRanking((Usuario) usuarioPropietario, 0, "Muy buen cliente", setUpCategoriaValida((Usuario) usuarioInquilino)));
+//        });
+//        assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
+//    }
+//
+//    @Test
+//    void puntuarUnaCategoriaInvalidaLanzaExcepcionTest() {
+//        CategoriaInvalidaException excepcion = assertThrows(CategoriaInvalidaException.class, ()->{
+//            setUpCheckOutContext(usuarioInquilino).puntuar(setUpRanking((Usuario) usuarioPropietario, 5, "Muy buen cliente", mock(Categoria.class)));
+//        });
+//        assertTrue(excepcion.getMessage().contains("La categoría ingresada no es válida"));
+//    }
+//
+//    @Test
+//    void getPuntajePromedioEnCategoriaEnListaDeRankingsVaciaLanzaExcepcionTest() {
+//        assertThrows(NoSuchElementException.class, ()->
+//                usuarioInquilino.getPuntajePromedioEnCategoria(setUpCategoriaValida((Usuario) usuarioInquilino))
+//        );
+//    }
+//
+//    @Test
+//    void getPuntajePromedioEnCategoriaQueNoExisteLanzaExcepcionTest() {
+//        puntuarAInquilinoTest();
+//        assertThrows(NoSuchElementException.class, ()->
+//                usuarioInquilino.getPuntajePromedioEnCategoria(mock(Categoria.class))
+//        );
+//    }
+//
+//    @Test
+//    void getPuntajePromedioEnCategoriaTest() {
+//        Usuario propietario1 = mock(Usuario.class);
+//        Usuario propietario2 = mock(Usuario.class);
+//        Usuario propietario3 = mock(Usuario.class);
+//        Usuario propietario4 = mock(Usuario.class);
+//
+//        Categoria categoria = setUpCategoriaValida((Usuario) usuarioInquilino);
+//        String comentario = "muy buen cliente";
+//
+//        setUpCheckOutContext(usuarioInquilino);
+//
+//        usuarioInquilino.puntuar(setUpRanking(propietario1, 5, comentario, categoria));
+//        usuarioInquilino.puntuar(setUpRanking(propietario2, 2, comentario, categoria));
+//        usuarioInquilino.puntuar(setUpRanking(propietario3, 3, comentario, categoria));
+//        usuarioInquilino.puntuar(setUpRanking(propietario4, 1, comentario, setUpCategoriaValida((Usuario) usuarioInquilino)));
+//
+//        assertEquals(3.3, publicacion.getPuntajePromedioEnCategoria(categoria));
+//    }
+//
+//    @Test
+//    void getPuntajePromedioTotalTest() {
+//        Usuario inquilino1 = mock(Usuario.class);
+//        Usuario inquilino2 = mock(Usuario.class);
+//        Usuario inquilino3 = mock(Usuario.class);
+//        Usuario inquilino4 = mock(Usuario.class);
+//
+//        Categoria categoria = setUpCategoriaValida();
+//
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino1), 5, "muy buen wi-fi", categoria));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino2), 2, "muy buen wi-fi", categoria));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino3), 3, "muy buen wi-fi", categoria));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino4), 1, "muy buen wi-fi", setUpCategoriaValida()));
+//
+//        assertEquals(2.8, publicacion.getPuntajePromedioTotal());
+//    }
+//
+//    @Test
+//    void getComentariosDeInquilinosPreviosRankingsVaciosTest() {
+//        assertTrue(publicacion.getComentariosDeInquilinosPrevios().isEmpty());
+//    }
+//
+//    @Test
+//    void getComentariosDeInquilinosPreviosTest() {
+//        Usuario inquilino1 = mock(Usuario.class);
+//        Usuario inquilino2 = mock(Usuario.class);
+//
+//        Categoria categoria1 = setUpCategoriaValida();
+//        Categoria categoria2 = setUpCategoriaValida();
+//
+//        String comentario1 = "Muy buena la categoria1";
+//        String comentario2 = "Malarda la categoria2";
+//        String comentario3 = "Bastante mediocre la categoria2";
+//        String comentario4 = "Nefasta la categoria1";
+//
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino1), 5, comentario1, categoria1));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino2), 2, comentario2, categoria2));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino1), 3, comentario3, categoria2));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino2), 1, comentario4, categoria1));
+//
+//        assertTrue(publicacion.getComentariosDeInquilinosPrevios().containsAll(List.of(comentario1, comentario2, comentario3, comentario4)));
+//    }
+//
+//    @Test
+//    void getPuntajeDeUsuarioEnCategoriaTest() {
+//        Usuario inquilino1 = mock(Usuario.class);
+//        Usuario inquilino2 = mock(Usuario.class);
+//
+//        Categoria categoria1 = setUpCategoriaValida();
+//        Categoria categoria2 = setUpCategoriaValida();
+//
+//        String comentario1 = "Muy buena la categoria1";
+//        String comentario2 = "Malarda la categoria2";
+//        String comentario3 = "Bastante mediocre la categoria2";
+//        String comentario4 = "Nefasta la categoria1";
+//
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino1), 5, comentario1, categoria1));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino2), 2, comentario2, categoria2));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino1), 3, comentario3, categoria2));
+//        publicacion.puntuar(setUpRanking(setUpCheckOutContext(inquilino2), 1, comentario4, categoria1));
+//
+//        assertEquals(5, publicacion.getPuntajeDeUsuarioEnCategoria(inquilino1, categoria1));
+//        assertEquals(2, publicacion.getPuntajeDeUsuarioEnCategoria(inquilino2, categoria2));
+//        assertEquals(3, publicacion.getPuntajeDeUsuarioEnCategoria(inquilino1, categoria2));
+//        assertEquals(1, publicacion.getPuntajeDeUsuarioEnCategoria(inquilino2, categoria1));
+//    }
+//
+//    /*
+//    TODO: Habría que separar e/Inquilino y Usuario los Rankings.
+//        puntuar()
+//        getPuntaje()
+//        getPuntajePromedioTotal()
+//        getComentariosDeInquilinosPrevios()
+//        getPuntajeDeUsuarioEnCategoria()
+//
+//     */
 }
