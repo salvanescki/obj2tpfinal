@@ -1,7 +1,7 @@
 package ar.edu.unq.po2.tpIntegrador;
 
 public interface Listener {
-    void notificarReserva(String mensaje, Publicacion publicacion);
-    void notificarCancelacionReserva(String mensaje, Publicacion publicacion);
-    void notificarBajaDePrecio(String mensaje, Publicacion publicacion);
+    void notificarReserva(String evento, Publicacion publicacion);
+    void notificarCancelacionReserva(String evento, Publicacion publicacion);
+    void notificarBajaDePrecio(String evento, Publicacion publicacion);
 }
