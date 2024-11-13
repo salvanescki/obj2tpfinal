@@ -52,4 +52,13 @@ public class Periodo {
     public void setPrecio(Precio precio){
         this.precio = precio;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(this == o) return true;
+        if(!this.getClass().equals(o.getClass())) return false;
+        Periodo otro = (Periodo) o;
+        return this.getFechaDesde().isEqual(otro.getFechaDesde())
+                && this.getFechaHasta().isEqual(otro.getFechaHasta());
+    }
 }
