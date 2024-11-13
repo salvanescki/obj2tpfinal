@@ -20,27 +20,27 @@ public class SitioAlquileresTest {
     @Test
     void notificaBajaDePrecioTest() {
 
-        TipoDeInmueble tipoDeInmueble = new TipoDeInmueble("casa");
-        Precio precio = new Precio(170000);
+        String mensaje = "";
 
-        when(publicacionMock.getTipoDeInmueble()).thenReturn(tipoDeInmueble);
-        when(publicacionMock.getPrecio(any(LocalDate.class), any(LocalDate.class))).thenReturn(precio);
-
-        String mensaje = "Baja de precio: No te pierdas esta oferta: Un inmueble casa a tan sólo 170000.0 pesos.";
-
-        sitioAlquileres.notificarBajaDePrecio("Baja de precio", publicacionMock);
+        sitioAlquileres.notificarBajaDePrecio(mensaje, publicacionMock);
         verify(publisher).publish(mensaje);
     }
 
     @Test
     void noNotificaCancelacionTest() {
-        sitioAlquileres.notificarCancelacionReserva("Cancelacion de reserva:", publicacionMock);
+
+        String mensaje = "";
+
+        sitioAlquileres.notificarCancelacionReserva(mensaje, publicacionMock);
         verify(publisher, never()).publish(anyString());
     }
 
     @Test
     void noNotificaReservaTest() {
-        sitioAlquileres.notificarReserva("Reserva:", publicacionMock);
+
+        String mensaje = "";
+
+        sitioAlquileres.notificarReserva(mensaje, publicacionMock);
         verify(publisher, never()).publish(anyString());
     }
 

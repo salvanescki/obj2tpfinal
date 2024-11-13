@@ -9,19 +9,19 @@ public class AppMobile implements Listener{
     }
 
     @Override
-    public void notificarReserva(String evento, Publicacion publicacion) {
+    public void notificarReserva(String mensaje, Publicacion publicacion) {
         // Por ahora no se pide esta notificacion.
     }
 
     @Override
-    public void notificarCancelacionReserva(String evento, Publicacion publicacion) {
-        popUoWindow.popUp(evento + ": El/la "
-                                          + publicacion.getTipoDeInmueble().getTipoDeInmueble()
-                                          + " que te interesa se ha liberado! Corre a reservarlo!", "Rosa", 24);
+    public void notificarCancelacionReserva(String mensaje, Publicacion publicacion) {
+        popUoWindow.popUp(mensaje, "Negro", 24);
     }
 
     @Override
-    public void notificarBajaDePrecio(String evento, Publicacion publicacion) {
+    public void notificarBajaDePrecio(String mensaje, Publicacion publicacion) {
         // Por ahora no se pide esta notificacion.
     }
+
+
 }

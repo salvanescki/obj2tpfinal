@@ -22,25 +22,27 @@ public class AppMobileTest {
     @Test
     void notificaCancelacionTest() {
 
-        TipoDeInmueble tipoDeInmueble = new TipoDeInmueble("casa");
+        String mensaje = "";
 
-        when(publicacionMock.getTipoDeInmueble()).thenReturn(tipoDeInmueble);
-
-        String mensaje = "Cancelacion de reserva: El/la casa que te interesa se ha liberado! Corre a reservarlo!";
-
-        app.notificarCancelacionReserva("Cancelacion de reserva", publicacionMock);
-        verify(popUpWindowMock).popUp(mensaje, "Rosa",24);
+        app.notificarCancelacionReserva(mensaje, publicacionMock);
+        verify(popUpWindowMock).popUp(mensaje, "Negro", 24);
     }
 
     @Test
     void noNotificaReservaTest() {
-        app.notificarReserva("Cancelacion de reserva:", publicacionMock);
+
+        String mensaje = "";
+
+        app.notificarReserva(mensaje, publicacionMock);
         verify(popUpWindowMock, never()).popUp(anyString(), anyString(), anyInt());
     }
 
     @Test
     void noNotificaBajaDePrecioTest() {
-        app.notificarBajaDePrecio("Cancelacion de reserva:", publicacionMock);
+
+        String mensaje = "";
+
+        app.notificarBajaDePrecio(mensaje, publicacionMock);
         verify(popUpWindowMock, never()).popUp(anyString(), anyString(), anyInt());
     }
 }
