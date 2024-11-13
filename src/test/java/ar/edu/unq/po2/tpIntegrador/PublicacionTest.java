@@ -31,6 +31,7 @@ public class PublicacionTest {
     LocalDate diaHasta;
     Periodo mockPeriodo;
     Periodo periodoDeFechas;
+    private PoliticaDeCancelacion dummyPoliticaDeCancelacion;
 
     @BeforeEach
     void setUp() {
@@ -58,6 +59,8 @@ public class PublicacionTest {
                                   Arrays.asList(dummyFormaDePago, dummyFormaDePago, dummyFormaDePago, dummyFormaDePago),
                                   dummyPrecio
                                 );
+        dummyPoliticaDeCancelacion = mock(PoliticaSinCancelacion.class);
+        publicacion.definirPoliticaDeCancelacion(dummyPoliticaDeCancelacion);
         inquilino = mock(Usuario.class);
         tarjeta = mock(FormaDePago.class);
         diaDesde = LocalDate.of(2024, 12, 1);
