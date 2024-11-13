@@ -26,4 +26,5 @@ public class TipoDeInmuebleTest {
 
         assertEquals(TextoNormalizado.normalizarTexto(nuevoTipoDeInmueble), tipoDeInmueble.getTipoDeInmueble());
     }
+
 }

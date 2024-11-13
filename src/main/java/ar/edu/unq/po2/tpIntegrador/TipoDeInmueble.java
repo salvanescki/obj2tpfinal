@@ -16,3 +16,4 @@ public class TipoDeInmueble {
         this.tipoDeInmueble = TextoNormalizado.normalizarTexto(tipoDeInmueble);
     }
 }
+
