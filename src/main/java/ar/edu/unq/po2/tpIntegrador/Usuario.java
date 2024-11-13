@@ -1,5 +1,7 @@
 package ar.edu.unq.po2.tpIntegrador;
 
+import ar.edu.unq.po2.tpIntegrador.excepciones.CheckOutNoRealizadoException;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ public class Usuario implements Propietario, Inquilino {
     private LocalDate fechaDeCreacion;
     private final List<Reserva> reservas;
     private final List<Publicacion> publicaciones;
-
+    private final List<Ranking> rankings;
 
     public Usuario(String nombre, String email, String telefono) {
         setNombre(nombre);
@@ -23,6 +25,7 @@ public class Usuario implements Propietario, Inquilino {
         fechaDeCreacion = LocalDate.now();
         reservas = new ArrayList<Reserva>();
         publicaciones = new ArrayList<Publicacion>();
+        rankings = new ArrayList<Ranking>();
     }
 
     public String getNombre() {
@@ -129,33 +132,61 @@ public class Usuario implements Propietario, Inquilino {
     public List<Publicacion> getInmueblesPublicados() {
         return publicaciones;
     }
+/*
+    private boolean esRankingDePropietario(Ranking ranking) {
+        return sitio.esCategoriaDePropietario(ranking.getCategoria());
+    }
+
+    private List<Ranking> getRankingsDePropietario(){
+        return rankings.stream()
+                .filter(this::esRankingDePropietario)
+                .toList();
+    }
+*/
+    private boolean fueHechoCheckOutConPropietario(Propietario propietario){
+        return reservas.stream()
+                        .anyMatch(reserva -> reserva.getPublicacion().getPropietario().equals(propietario)
+                                            && reserva.getPublicacion().fueHechoElCheckOut(this));
+    }
+
+    private boolean fueHechoCheckOutConInquilino(Inquilino inquilino){
+        return inquilino.getReservas().stream()
+                                      .anyMatch(reserva -> reserva.getPublicacion().getPropietario().equals(this)
+                                              && reserva.getPublicacion().fueHechoElCheckOut(inquilino));
+    }
+
+    private void validarCheckOut(Ranking ranking) {
+        Usuario ranker = ranking.getUsuario();
+        if(!(fueHechoCheckOutConPropietario(ranker) || fueHechoCheckOutConInquilino(ranker))){
+            throw new CheckOutNoRealizadoException("No se puede rankear antes de hacer el check-out");
+        }
+    }
 
     @Override
     public void puntuar(Ranking ranking) {
-        // TODO: Implementar
+        validarCheckOut(ranking);
+        Ranking.validarRanking(ranking, this);
+        rankings.add(ranking);
     }
 
     @Override
     public double getPuntajePromedioEnCategoria(Categoria categoria) {
-        // TODO: Implementar
-        return 0;
+        return RankingUtils.getPuntajePromedioEnCategoria(rankings, categoria);
     }
 
     @Override
     public double getPuntajePromedioTotal() {
-        // TODO: Implementar
-        return 0;
+        return RankingUtils.getPuntajePromedioTotal(rankings);
     }
 
     @Override
     public List<String> getComentariosDeInquilinosPrevios() {
-        // TODO: Implementar
-        return List.of();
+        // FIXME: Puede que acá haya que filtrar por los rankings de Propietario, ya que los de inquilino no tienen sentido
+        return RankingUtils.getComentariosDeInquilinosPrevios(rankings);
     }
 
     @Override
     public int getPuntajeDeUsuarioEnCategoria(Usuario usuario, Categoria categoria) {
-        // TODO: Implementar
-        return 0;
+        return RankingUtils.getPuntajeDeUsuarioEnCategoria(rankings, usuario, categoria);
     }
 }

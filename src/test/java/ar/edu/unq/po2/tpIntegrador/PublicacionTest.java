@@ -55,8 +55,7 @@ public class PublicacionTest {
                                   LocalTime.of(14, 0),
                                   LocalTime.of(12,0),
                                   Arrays.asList(dummyFormaDePago, dummyFormaDePago, dummyFormaDePago, dummyFormaDePago),
-                                  dummyPrecio,
-                                  sitio
+                                  dummyPrecio
                                 );
         inquilino = mock(Usuario.class);
         tarjeta = mock(FormaDePago.class);

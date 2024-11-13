@@ -18,10 +18,10 @@ public class Publicacion implements Rankeable {
     private final String ciudad;
     private final String direccion;
     private final List<Servicio> servicios = new ArrayList<Servicio>();
-    private int capacidad;
+    private final int capacidad;
     private final List<Foto> fotos = new ArrayList<Foto>();
-    private LocalTime horarioCheckIn;
-    private LocalTime horarioCheckOut;
+    private final LocalTime horarioCheckIn;
+    private final LocalTime horarioCheckOut;
     private final List<FormaDePago> formasDePago = new ArrayList<FormaDePago>();
     private Precio precioBase;
     private PoliticaDeCancelacion politicaDeCancelacion;
@@ -29,11 +29,10 @@ public class Publicacion implements Rankeable {
     private final List<Reserva> reservas = new ArrayList<Reserva>();
     private final List<Periodo> periodos = new ArrayList<Periodo>();
     private Notificador notificador = new Notificador();
-    private final SitioWeb sitio;
     private int cantCheckOuts;
-    private List<Inquilino> inquilinosPrevios = new ArrayList<Inquilino>();
+    private final List<Inquilino> inquilinosPrevios = new ArrayList<Inquilino>();
 
-    public Publicacion(Propietario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase, SitioWeb sitio) {
+    public Publicacion(Propietario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase) {
         this.propietario = propietario;
         this.tipoDeInmueble = tipoDeInmueble;
         this.superficie = superficie;
@@ -48,7 +47,6 @@ public class Publicacion implements Rankeable {
         this.formasDePago.addAll(formasDePago);
         this.precioBase = precioBase;
         definirPoliticaDeCancelacion(new PoliticaSinCancelacion());
-        this.sitio = sitio;
         this.cantCheckOuts = 0;
     }
 
@@ -246,42 +244,24 @@ public class Publicacion implements Rankeable {
         rankings.add(ranking);
     }
 
-    private double getPuntajePromedioDeRankings(Stream<Ranking> str){
-        DecimalFormat formato = new DecimalFormat("#.#");
-        return Double.parseDouble(formato.format(
-                    str.mapToInt(Ranking::getPuntaje)
-                        .average()
-                        .orElseThrow()
-        ));
-    }
-
     @Override
     public double getPuntajePromedioEnCategoria(Categoria categoria) {
-        return getPuntajePromedioDeRankings(rankings.stream()
-                                                    .filter(ranking -> ranking.getCategoria().equals(categoria)));
+        return RankingUtils.getPuntajePromedioEnCategoria(rankings, categoria);
     }
 
     @Override
     public double getPuntajePromedioTotal() {
-        return getPuntajePromedioDeRankings(rankings.stream());
+        return RankingUtils.getPuntajePromedioTotal(rankings);
     }
 
     @Override
     public List<String> getComentariosDeInquilinosPrevios() {
-        // Podría cambiarse la List<String> por un Map<Usuario o Inquilino, String>
-        return rankings.stream()
-                    .map(Ranking::getComentario)
-                    .toList();
+        return RankingUtils.getComentariosDeInquilinosPrevios(rankings);
     }
 
     @Override
     public int getPuntajeDeUsuarioEnCategoria(Usuario usuario, Categoria categoria) {
-        return rankings.stream()
-                .filter(ranking -> ranking.getUsuario().equals(usuario))
-                .filter(ranking -> ranking.getCategoria().equals(categoria))
-                .mapToInt(Ranking::getPuntaje)
-                .findFirst()
-                .orElseThrow();
+        return RankingUtils.getPuntajeDeUsuarioEnCategoria(rankings, usuario, categoria);
     }
 
     public void setNotificador(Notificador notificador){
