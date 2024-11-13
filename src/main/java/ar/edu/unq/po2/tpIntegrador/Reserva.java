@@ -5,11 +5,11 @@ import java.time.LocalDate;
 public class Reserva implements EstadoReserva {
 
     private EstadoReserva estado;
-    private Inquilino inquilino;
-    private LocalDate fechaDesde;
-    private LocalDate fechaHasta;
-    private FormaDePago formaDePago;
-    private Publicacion publicacion;
+    private final Inquilino inquilino;
+    private final LocalDate fechaDesde;
+    private final LocalDate fechaHasta;
+    private final FormaDePago formaDePago;
+    private final Publicacion publicacion;
 
     public Reserva(Inquilino inquilino, LocalDate fechaDesde, LocalDate fechaHasta, FormaDePago formaDePago, Publicacion publicacion) {
         this.inquilino = inquilino;
@@ -17,7 +17,7 @@ public class Reserva implements EstadoReserva {
         this.fechaHasta = fechaHasta;
         this.formaDePago = formaDePago;
         this.publicacion = publicacion;
-        this.estado = new ReservaPendiente();
+        this.estado = new ReservaPendiente(this);
     }
 
     public LocalDate getFechaDesde(){
