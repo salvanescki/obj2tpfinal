@@ -6,7 +6,7 @@ public class Ranking {
 
     public Usuario getUsuario(){
         // TODO: Implementar
-        return new Usuario();
+        return null;
     }
 
     public int getPuntaje(){

@@ -225,7 +225,7 @@ public class Publicacion implements Rankeable {
         notificador.suscribir(suscriptor);
     }
 
-    private boolean fueHechoElCheckOut(Inquilino inquilino){
+    public boolean fueHechoElCheckOut(Inquilino inquilino){
         return inquilinosPrevios.contains(inquilino);
     }
 
