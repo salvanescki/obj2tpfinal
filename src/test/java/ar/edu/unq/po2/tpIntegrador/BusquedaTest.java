@@ -73,12 +73,12 @@ public class BusquedaTest {
     @Test
     void conPrecioMaximoFiltraPublicacionesTest() {
         assertEquals(List.of(casaEnQuilmes),
-                     new Busqueda("Quilmes", ahora, enQuinceDias).conPrecioMaximo(new Precio(20000)).efectuarBusqueda(publicaciones));
+                     new Busqueda("Quilmes", ahora, enQuinceDias).conPrecioMaximo(new Precio(15000)).efectuarBusqueda(publicaciones));
     }
 
     @Test
     void conPrecioMinimoYMaximoIncluyeLosCasosBordeTest() {
-        Precio precioEsperado = new Precio(20000);
+        Precio precioEsperado = new Precio(30000);
         assertEquals(List.of(dptoEnMdp),
                      new Busqueda("Mar del Plata", ahora, enQuinceDias)
                                   .conPrecioMinimo(precioEsperado)
@@ -90,7 +90,7 @@ public class BusquedaTest {
     void conPrecioMinimoYMaximoFiltranPublicacionesTest() {
         assertTrue(new Busqueda("Quilmes", ahora, enQuinceDias)
                         .conPrecioMinimo(new Precio(10001))
-                        .conPrecioMaximo(new Precio(29999))
+                        .conPrecioMaximo(new Precio(19999))
                         .efectuarBusqueda(publicaciones)
                         .isEmpty());
     }

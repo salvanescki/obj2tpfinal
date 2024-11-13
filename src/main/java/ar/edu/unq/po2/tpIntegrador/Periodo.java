@@ -6,6 +6,9 @@ public class Periodo {
     public Periodo(LocalDate fechaDesde, LocalDate fechaHasta, Precio precio) {
     }
 
+    public Periodo(LocalDate fechaDesde, LocalDate fechaHasta) {
+    }
+
     public boolean seSuperponeCon(Periodo otroPeriodo) {
         // TODO: Implementar
         return false;
