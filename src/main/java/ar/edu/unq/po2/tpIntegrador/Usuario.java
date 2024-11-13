@@ -196,4 +196,11 @@ public class Usuario implements Propietario, Inquilino {
     public int getPuntajeDeUsuarioEnCategoria(Usuario usuario, Categoria categoria) {
         return RankingUtils.getPuntajeDeUsuarioEnCategoria(rankings, usuario, categoria);
     }
+
+    @Override
+    public String getTipo() {
+        return "Inquilino";
+    }
+
+
 }

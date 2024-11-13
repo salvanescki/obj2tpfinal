@@ -8,4 +8,5 @@ public interface Rankeable {
     double getPuntajePromedioTotal();
     List<String> getComentariosDeInquilinosPrevios();
     int getPuntajeDeUsuarioEnCategoria(Usuario usuario, Categoria categoria);
+    String getTipo();
 }
