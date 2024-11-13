@@ -13,12 +13,12 @@ import static org.mockito.Mockito.*;
 
 public class PoliticaDeCancelacionGratuitaTest {
 
-    PoliticaDeCancelacion politicaDeCancelacion;
-    Publicacion publicacion;
-    Reserva reserva;
-    Inquilino inquilino;
-    Precio precioTotalReserva;
-    Periodo periodoReserva;
+    private PoliticaDeCancelacion politicaDeCancelacion;
+    private Publicacion publicacion;
+    private Reserva reserva;
+    private Inquilino inquilino;
+    private Precio precioTotalReserva;
+    private Periodo periodoReserva;
 
     @BeforeEach
     void setUp() {
