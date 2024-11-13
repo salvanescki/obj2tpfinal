@@ -9,12 +9,22 @@ public class PoliticaIntermediaDeCancelacion implements PoliticaDeCancelacion {
     }
 
     private boolean esCancelacionGratuita(Reserva reserva){
-        return LocalDate.now().isBefore(reserva.getFechaDesde().minusDays(20));
+        LocalDate diezDiasAntesDeReserva = reserva.getFechaDesde().minusDays(20);
+        return estaEnElMismoDiaOAntes(diezDiasAntesDeReserva);
+    }
+
+    private boolean estaEnElMismoDiaOAntes(LocalDate dia){
+        return LocalDate.now().isEqual(dia) || LocalDate.now().isBefore(dia);
+    }
+
+    private boolean estaEnElMismoDiaODespues(LocalDate dia){
+        return LocalDate.now().isEqual(dia) || LocalDate.now().isAfter(dia);
     }
 
     private boolean debePagarLaMitadDelPrecio(Reserva reserva){
-        return LocalDate.now().isBefore(reserva.getFechaDesde().minusDays(10))
-                && LocalDate.now().isAfter(reserva.getFechaDesde().minusDays(19));
+        LocalDate diezDiasAntesDeReserva = reserva.getFechaDesde().minusDays(10);
+        LocalDate diecinueveDiasAntesDeReserva = reserva.getFechaDesde().minusDays(19);
+        return estaEnElMismoDiaODespues(diecinueveDiasAntesDeReserva) && estaEnElMismoDiaOAntes(diezDiasAntesDeReserva);
     }
 
     private Precio getPrecioAPagar(Reserva reserva){
