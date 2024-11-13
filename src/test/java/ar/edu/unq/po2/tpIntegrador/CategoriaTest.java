@@ -24,4 +24,23 @@ class CategoriaTest {
         assertEquals(TextoNormalizado.normalizarTexto(nuevaCategoria), categoria.getCategoria());
     }
 
+    @Test
+    void testGetTipoDeCategoriaSinTipo() {
+        assertEquals("Sin tipo", new Categoria("ejemplo").getTipoDeCategoria());
+    }
+
+    @Test
+    void testGetTipoDeCategoriaInquilino() {
+        assertEquals("Inquilino", new CategoriaInquilino("ejemplo").getTipoDeCategoria());
+    }
+
+    @Test
+    void testGetTipoDeCategoriaPropietario() {
+        assertEquals("Propietario", new CategoriaPropietario("ejemplo").getTipoDeCategoria());
+    }
+
+    @Test
+    void testGetTipoDeCategoriaPublicacion() {
+        assertEquals("Publicacion", new CategoriaPublicacion("ejemplo").getTipoDeCategoria());
+    }
 }
