@@ -1,8 +1,6 @@
 package ar.edu.unq.po2.tpIntegrador;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -15,9 +13,9 @@ public class NotificadorTest {
 
     @BeforeEach
     void setUp() {
-        notificador = new Notificador();
+        notificador = mock(Notificador.class);
         sitioAlquileres = mock(SitioAlquileres.class);
-        app = mock(Listener.class);
+        app = mock(AppMobile.class);
         publicacion = mock(Publicacion.class);
 
         notificador.suscribir(sitioAlquileres);
@@ -38,13 +36,17 @@ public class NotificadorTest {
 
     @Test
     void seNotificaUnaBajaDePrecioTest() {
-        String mensajeEsperado = "Tu inmueble de interes bajo de precio.";
+        String mensajeBajaDePrecio = "Tu inmueble de interes bajo de precio.";
 
-        notificador.notificarBajaDePrecio(mensajeEsperado, publicacion);
+        doNothing().when(app).notificarBajaDePrecio(mensajeBajaDePrecio, publicacion);
 
-        verify(sitioAlquileres).notificarBajaDePrecio(mensajeEsperado, publicacion);
-        verify(app, never()).notificarBajaDePrecio(mensajeEsperado, publicacion);
+        notificador.notificarBajaDePrecio(mensajeBajaDePrecio, publicacion);
+
+        verify(sitioAlquileres).notificarBajaDePrecio(mensajeBajaDePrecio, publicacion);
+        verify(app, never()).notificarBajaDePrecio(mensajeBajaDePrecio, publicacion);
     }
+
+
 
     @Test
     void seNotificaUnaReservaALosInteresadosTest() {
