@@ -15,7 +15,7 @@
 
 ## Diagrama de clases UML
 
-<a href="https://raw.githubusercontent.com/salvanescki/obj2tpfinal/10a82e51a298d067cdf76dbc1d37c039b028c029/diagramaDeClasesUML.svg" target="_blank">
+<a href="https://raw.githubusercontent.com/salvanescki/obj2tpfinal/7d5f926d932c7faca58900fd7141023157e948bd/diagramaDeClasesUML.svg" target="_blank">
   <picture>
     <source srcset="./diagramaDeClasesUMLDarkMode.svg" media="(prefers-color-scheme: dark)">
     <source srcset="./diagramaDeClasesUML.svg" media="(prefers-color-scheme: light)">
