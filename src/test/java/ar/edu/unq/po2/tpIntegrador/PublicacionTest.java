@@ -420,6 +420,7 @@ public class PublicacionTest {
         Usuario inquilino = mock(Usuario.class);
         Reserva reserva = mock(Reserva.class);
         when(reserva.estaAprobada()).thenReturn(true);
+        when(reserva.getFechaHasta()).thenReturn(diaHasta);
         publicacion.getReservas().add(reserva);
         when(reserva.getInquilino()).thenReturn(inquilino);
 
@@ -443,10 +444,37 @@ public class PublicacionTest {
     }
 
     @Test
+    void checkOutSiElDiaDeCheckOutYaPasoLanzaExcepcion() {
+        Usuario inquilino = mock(Usuario.class);
+        Reserva reserva = mock(Reserva.class);
+        when(reserva.estaAprobada()).thenReturn(true);
+        when(reserva.getFechaHasta()).thenReturn(LocalDate.now().minusDays(1));
+        publicacion.getReservas().add(reserva);
+        when(reserva.getInquilino()).thenReturn(inquilino);
+
+        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()-> publicacion.checkOut(reserva, publicacion.getHorarioCheckOut()));
+        assertTrue(excepcion.getMessage().contains("Se ha pasado de la fecha/hora final de la reserva"));
+    }
+
+    @Test
+    void checkOutSiEsElDiaDeCheckOutPeroYaPasoLaHoraLanzaExcepcion() {
+        Usuario inquilino = mock(Usuario.class);
+        Reserva reserva = mock(Reserva.class);
+        when(reserva.estaAprobada()).thenReturn(true);
+        when(reserva.getFechaHasta()).thenReturn(LocalDate.now());
+        publicacion.getReservas().add(reserva);
+        when(reserva.getInquilino()).thenReturn(inquilino);
+
+        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()-> publicacion.checkOut(reserva, publicacion.getHorarioCheckOut().plusHours(1)));
+        assertTrue(excepcion.getMessage().contains("Se ha pasado de la fecha/hora final de la reserva"));
+    }
+
+    @Test
     void checkOutSiElHorarioDeCheckOutYaPasoLanzaExcepcion() {
         Usuario inquilino = mock(Usuario.class);
         Reserva reserva = mock(Reserva.class);
         when(reserva.estaAprobada()).thenReturn(true);
+        when(reserva.getFechaHasta()).thenReturn(diaHasta);
         publicacion.getReservas().add(reserva);
         when(reserva.getInquilino()).thenReturn(inquilino);
 
@@ -475,6 +503,7 @@ public class PublicacionTest {
         Reserva reserva = mock(Reserva.class);
         when(reserva.estaAprobada()).thenReturn(true);
         when(reserva.getInquilino()).thenReturn(inquilino);
+        when(reserva.getFechaHasta()).thenReturn(diaHasta);
         publicacion.checkOut(reserva, publicacion.getHorarioCheckOut());
         return inquilino;
     }

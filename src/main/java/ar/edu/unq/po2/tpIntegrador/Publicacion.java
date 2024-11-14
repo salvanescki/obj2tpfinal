@@ -202,6 +202,17 @@ public class Publicacion implements Rankeable {
         }
     }
 
+    private boolean sePasoDeLaFechaHoraLimite(Reserva reserva, LocalTime horaActual){
+        return LocalDate.now().isAfter(reserva.getFechaHasta())
+                || (LocalDate.now().isEqual(reserva.getFechaHasta()) && horaActual.isAfter(horarioCheckOut));
+    }
+
+    private void validarFechaPreviaAlFinalDeLaReserva(Reserva reserva, LocalTime horaActual){
+        if(sePasoDeLaFechaHoraLimite(reserva, horaActual)){
+            throw new CheckOutNoRealizadoException("Se ha pasado de la fecha/hora final de la reserva");
+        }
+    }
+
     private void validarHorarioCheckOut(LocalTime horaActual) {
         if(horaActual.isAfter(horarioCheckOut)){
             throw new CheckOutNoRealizadoException("El horario de check-out de hoy ya ha pasado, inténtelo mañana");
@@ -209,9 +220,8 @@ public class Publicacion implements Rankeable {
     }
 
     public void checkOut(Reserva reserva, LocalTime horaActual){
-        // FIXME: Acá habría que agregar una validación de que se haga el checkout luego de la fechaHasta de la reserva
-        //  y antes del horarioCheckOut de ese mismo día.
         validarReservaAprobada(reserva);
+        validarFechaPreviaAlFinalDeLaReserva(reserva, horaActual);
         validarHorarioCheckOut(horaActual);
         cantCheckOuts++;
         inquilinosPrevios.add(reserva.getInquilino());
