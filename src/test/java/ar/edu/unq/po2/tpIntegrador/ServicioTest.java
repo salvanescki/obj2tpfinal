@@ -1,7 +1,8 @@
 package ar.edu.unq.po2.tpIntegrador;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class ServicioTest {
 
@@ -24,5 +25,12 @@ class ServicioTest {
         servicio.setServicio(nuevoServicio);
 
         assertEquals(TextoNormalizado.normalizarTexto(nuevoServicio), servicio.getServicio());
+    }
+
+    @Test
+    void equalsTest() {
+        Servicio internet = new Servicio("Internet");
+        assertEquals(internet, internet);
+        assertEquals(new Servicio("Telefonía"), new Servicio("TeLefoníA..-.-23"));
     }
 }

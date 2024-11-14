@@ -38,9 +38,9 @@ public class SitioWeb {
         return servicios;
     }
 
-    public List<Categoria> getListaDeCategorias(Rankeable rankeable) {
+    public List<Categoria> getListaDeCategorias(String tipoRankeable) {
         return categorias.stream()
-                         .filter(categoria -> categoria.getTipoDeCategoria().equals(rankeable.getTipo()))
+                         .filter(categoria -> categoria.getTipoDeCategoria().equals(tipoRankeable))
                          .toList();
     }
 
@@ -56,8 +56,8 @@ public class SitioWeb {
         categorias.add(categoria);
     }
 
-    public boolean esCategoriaValida(Categoria categoria, Rankeable rankeable){
-        return getListaDeCategorias(rankeable).contains(categoria);
+    public boolean esCategoriaValida(Categoria categoria, String tipoRankeable){
+        return getListaDeCategorias(tipoRankeable).contains(categoria);
     }
 
     private void validarPublicacion(Publicacion publicacion){

@@ -235,7 +235,7 @@ public class Publicacion implements Rankeable {
 
     private void validarRanking(Ranking ranking) {
         validarCheckOut(ranking.getUsuario());
-        Ranking.validarRanking(ranking, this);
+        Ranking.validarRanking(ranking, this.getTipo());
     }
 
     @Override

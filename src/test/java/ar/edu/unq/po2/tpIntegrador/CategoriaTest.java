@@ -43,4 +43,13 @@ class CategoriaTest {
     void testGetTipoDeCategoriaPublicacion() {
         assertEquals("Publicacion", new CategoriaPublicacion("ejemplo").getTipoDeCategoria());
     }
+
+    @Test
+    void equalsTest() {
+        Categoria categoria = new Categoria(" 4-.24-.-3.4.-e.-.- J --. em-----  P ...l..-   o-..- ");
+        Categoria categoriaDos = new Categoria("ejemplo");
+
+        assertEquals(categoria, categoria);
+        assertEquals(categoria, categoriaDos);
+    }
 }

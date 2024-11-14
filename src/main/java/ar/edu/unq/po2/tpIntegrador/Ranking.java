@@ -32,15 +32,15 @@ public class Ranking {
         }
     }
 
-    private static void validarCategoria(Categoria categoria, Rankeable rankeable) {
-        if(!sitio.esCategoriaValida(categoria, rankeable)){
+    private static void validarCategoria(Categoria categoria, String tipoRankeable) {
+        if(!sitio.esCategoriaValida(categoria, tipoRankeable)){
             throw new CategoriaInvalidaException("La categoría ingresada no es válida");
         }
     }
 
-    public static void validarRanking(Ranking ranking, Rankeable rankeable){
+    public static void validarRanking(Ranking ranking, String tipoRankeable){
         validarPuntaje(ranking.getPuntaje());
-        validarCategoria(ranking.getCategoria(), rankeable);
+        validarCategoria(ranking.getCategoria(), tipoRankeable);
     }
 
     public Usuario getUsuario(){
@@ -52,12 +52,10 @@ public class Ranking {
     }
 
     public String getComentario(){
-
         return comentario;
     }
 
     public Categoria getCategoria(){
-
         return categoria;
     }
 }
