@@ -3,23 +3,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class MailTest {
 
     private Reserva reserva;
     private Mail mail;
-    private Usuario inquilino;
-    private Publicacion publicacion;
-    private TipoDeInmueble tipoDeInmueble;
 
     @BeforeEach
     void setUp() {
         reserva = mock(Reserva.class);
         mail = new Mail("remitente@gmail.com", "destinatario@gmail.com", "Asunto", "Mensaje");
-        inquilino = mock(Usuario.class);
-        publicacion = mock(Publicacion.class);
-        tipoDeInmueble = mock(TipoDeInmueble.class);
     }
 
     @Test
