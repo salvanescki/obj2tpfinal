@@ -1,12 +1,8 @@
 package ar.edu.unq.po2.tpIntegrador.testsDeIntegracion;
 import ar.edu.unq.po2.tpIntegrador.*;
 
-import ar.edu.unq.po2.tpIntegrador.excepciones.usuarioNoPuedeRegistrarseConDatosIncompletosException;
-import org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
