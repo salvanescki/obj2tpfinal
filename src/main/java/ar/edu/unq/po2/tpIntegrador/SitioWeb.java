@@ -2,7 +2,9 @@ package ar.edu.unq.po2.tpIntegrador;
 
 import ar.edu.unq.po2.tpIntegrador.excepciones.UsuarioYaRegistradoException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,5 +86,29 @@ public class SitioWeb {
 
     public List<Publicacion> buscar(Busqueda busqueda){
         return busqueda.efectuarBusqueda(getListaDePublicaciones());
+    }
+
+    public List<Usuario> topTenInquilinosQueMasHanAlquilado(){
+        return usuariosRegistrados.stream()
+                                  .sorted(Comparator.comparingInt(Inquilino::getCantidadDeVecesQueAlquilo).reversed())
+                                  .limit(10)
+                                  .collect(Collectors.toList());
+    }
+
+    public List<Publicacion> inmueblesLibres(){
+        List<Publicacion> publicaciones = getListaDePublicaciones();
+        Periodo fechasActuales = new Periodo(LocalDate.now(), LocalDate.now());
+        return publicaciones.stream()
+                            .filter(p -> !p.estaReservadaEnFechas(fechasActuales))
+                            .toList();
+    }
+
+    public double tasaDeOcupacionDelSitio(){
+        List<Publicacion> publicaciones = getListaDePublicaciones();
+        Periodo fechasActuales = new Periodo(LocalDate.now(), LocalDate.now());
+        return ((double) publicaciones.stream()
+                                     .filter(p -> p.estaAlquiladaEnFechas(fechasActuales))
+                                     .count()
+                / publicaciones.size()) * 100;
     }
 }
