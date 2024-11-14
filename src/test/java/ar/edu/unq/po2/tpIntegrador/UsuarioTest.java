@@ -180,7 +180,7 @@ public class UsuarioTest {
 
     // ------------------------------------------- Tests Inquilino -----------------------------------------------------
 
-    private Reserva reservarPublicacion(Publicacion publicacion, LocalDate fechaDesde, LocalDate fechaHasta, Inquilino inquilino){
+    private Reserva reservarPublicacion(Publicacion publicacion, LocalDate fechaDesde, LocalDate fechaHasta, Usuario inquilino){
         Reserva reserva = mock(Reserva.class);
         doAnswer(invocation -> {
             inquilino.agregarReserva(reserva);
@@ -194,7 +194,7 @@ public class UsuarioTest {
         return reserva;
     }
 
-    private List<Reserva> mockReservaFactory(int cantidad, Inquilino inquilino){
+    private List<Reserva> mockReservaFactory(int cantidad, Usuario inquilino){
         List<Reserva> reservas = new ArrayList<>();
         for(int i = 0; i < cantidad; i++){
             reservas.add(reservarPublicacion(mock(Publicacion.class), LocalDate.now(), LocalDate.now(), inquilino));
@@ -223,7 +223,7 @@ public class UsuarioTest {
         assertEquals(reservasFuturas, usuarioInquilino.getReservasFuturas());
     }
 
-    private void crearReservasEnDosCiudades(Inquilino inquilino, String ciudadUno, String ciudadDos, List<Reserva> reservasCiudadUno, List<Reserva> reservasCiudadDos){
+    private void crearReservasEnDosCiudades(Usuario inquilino, String ciudadUno, String ciudadDos, List<Reserva> reservasCiudadUno, List<Reserva> reservasCiudadDos){
         Publicacion dptoCiudadUno = mock(Publicacion.class);
         when(dptoCiudadUno.getCiudad()).thenReturn(ciudadUno);
 
@@ -301,7 +301,7 @@ public class UsuarioTest {
         return ranking;
     }
 
-    private void setUpCheckOutContext(Inquilino inquilino, Propietario propietario) {
+    private void setUpCheckOutContext(Usuario inquilino, Usuario propietario) {
         Reserva reserva = mock(Reserva.class);
         Publicacion publicacion = mock(Publicacion.class);
         when(reserva.estaAprobada()).thenReturn(true);

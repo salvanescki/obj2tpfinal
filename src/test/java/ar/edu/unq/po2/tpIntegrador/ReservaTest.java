@@ -34,7 +34,7 @@ public class ReservaTest {
         fechaFin = fechaInicio.plusDays(10);
         periodoDeFechas = crearPeriodoMockDeFechas(fechaInicio, fechaFin);
 
-        reserva = spy(new Reserva(dummyInquilino, periodoDeFechas, dummyFormaDePago, dummyPublicacion));
+        reserva = spy(new Reserva((Usuario) dummyInquilino, periodoDeFechas, dummyFormaDePago, dummyPublicacion));
 
         when(estadoPendienteMock.estaPendiente()).thenReturn(true);
         reserva.setEstado(estadoPendienteMock);
@@ -48,9 +48,7 @@ public class ReservaTest {
     }
 
     @Test
-    void getInquilinoTest() {
-        assertEquals(dummyInquilino, reserva.getInquilino());
-    }
+    void getInquilinoTest() {assertEquals(dummyInquilino, reserva.getInquilino());}
 
     @Test
     void getFechaInicioTest() {
@@ -273,8 +271,6 @@ public class ReservaTest {
 
         assertTrue(reserva.seSuperponeConElPeriodo(nuevoPeriodoDeFechas));
     }
-
-
 }
 
 

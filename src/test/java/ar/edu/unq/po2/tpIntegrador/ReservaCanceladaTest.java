@@ -17,6 +17,16 @@ public class ReservaCanceladaTest {
     }
 
     @Test
+    void inicializacionReservaPendiente() {
+        assertEquals(reserva, cancelada.getReserva());
+    }
+
+    @Test
+    void getReservaTest() {
+        assertEquals(reserva, cancelada.getReserva());
+    }
+
+    @Test
     void noEsEstadoReservaPendienteTest() {
         assertFalse(cancelada.estaPendiente());
     }

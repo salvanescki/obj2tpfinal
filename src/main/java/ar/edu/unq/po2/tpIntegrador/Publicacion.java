@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class Publicacion implements Rankeable {
 
-    private final Propietario propietario;
+    private final Usuario propietario;
     private final TipoDeInmueble tipoDeInmueble;
     private final int superficie;
     private final String pais;
@@ -32,7 +32,7 @@ public class Publicacion implements Rankeable {
     private int cantCheckOuts;
     private final List<Inquilino> inquilinosPrevios = new ArrayList<Inquilino>();
 
-    public Publicacion(Propietario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase) {
+    public Publicacion(Usuario propietario, TipoDeInmueble tipoDeInmueble, int superficie, String pais, String ciudad, String direccion, List<Servicio> servicios, int capacidad, List<Foto> fotos, LocalTime horarioCheckIn, LocalTime horarioCheckOut, List<FormaDePago> formasDePago, Precio precioBase) {
         this.propietario = propietario;
         this.tipoDeInmueble = tipoDeInmueble;
         this.superficie = superficie;
@@ -50,7 +50,7 @@ public class Publicacion implements Rankeable {
         this.cantCheckOuts = 0;
     }
 
-    public Propietario getPropietario() {
+    public Usuario getPropietario() {
         return propietario;
     }
 
@@ -160,7 +160,7 @@ public class Publicacion implements Rankeable {
         notificador.notificarReserva("El inmueble " + tipoDeInmueble + " que te interesa, ha sido reservado desde el " + periodo.getFechaDesde() + " hasta el " + periodo.getFechaHasta() + ".", this);
     }
 
-    public void reservar(Inquilino inquilino, Periodo periodo, FormaDePago formaDePago) {
+    public void reservar(Usuario inquilino, Periodo periodo, FormaDePago formaDePago) {
         validarFechasEnReserva(periodo);
         Reserva reserva = new Reserva(inquilino, periodo, formaDePago, this);
         // propietario.agregarReservaParaAprobar(reserva); o simplemente notificar (lo cual se hace abajo)
@@ -168,8 +168,8 @@ public class Publicacion implements Rankeable {
             notificarNuevaReserva(periodo);
         }
         reservas.add(reserva);
-        inquilinosPrevios.remove(inquilino);
-        inquilino.agregarReserva(reserva);
+        inquilinosPrevios.remove((Usuario) inquilino);
+        ((Usuario) inquilino).agregarReserva(reserva);
     }
 
     private Reserva getFirstReservaCondicional(Periodo periodo){

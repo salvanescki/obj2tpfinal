@@ -1,11 +1,11 @@
 package ar.edu.unq.po2.tpIntegrador;
-
+import static org.mockito.Mockito.*;
 import ar.edu.unq.po2.tpIntegrador.excepciones.OperacionInvalidaConEstadoReservaException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.mockito.MockedStatic;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+
 
 public class ReservaAprobadaTest {
 
@@ -16,6 +16,16 @@ public class ReservaAprobadaTest {
     void setUp() {
         reserva = mock(Reserva.class);
         aprobada = new ReservaAprobada(reserva);
+    }
+
+    @Test
+    void inicializacionReservaPendiente() {
+        assertEquals(reserva, aprobada.getReserva());
+    }
+
+    @Test
+    void getReservaTest() {
+        assertEquals(reserva, aprobada.getReserva());
     }
 
     @Test
@@ -44,12 +54,26 @@ public class ReservaAprobadaTest {
 
     @Test
     void alCancelarseCambiaDeEstadoACanceladaYEnviaUnMailAlPropietarioTest() {
-        when(reserva.fueCancelada()).thenReturn(true);
-        ReservaAprobada spyAprobada = spy(aprobada);
-        verify(spyAprobada, times(0)).enviarMailQueAvisaLaCancelacion();
-        spyAprobada.cancelarReserva();
-        verify(spyAprobada, times(1)).enviarMailQueAvisaLaCancelacion();
-        assertTrue(reserva.fueCancelada());
-        assertEquals("Se envio con exito el aviso de cancelacion al propietario de la publicacion.", spyAprobada.enviarMailQueAvisaLaCancelacion());
+        Usuario inquilinoMock = mock(Usuario.class);
+        Usuario propietarioMock = mock(Usuario.class);
+        Publicacion publicacionMock = mock(Publicacion.class);
+
+        when(inquilinoMock.getEmail()).thenReturn("inquilino@gmail.com");
+        when(inquilinoMock.getNombre()).thenReturn("Inquilino");
+        when(propietarioMock.getEmail()).thenReturn("propietario@gmail.com");
+        when(publicacionMock.getPropietario()).thenReturn(propietarioMock);
+        when(reserva.getInquilino()).thenReturn(inquilinoMock);
+        when(reserva.getPublicacion()).thenReturn(publicacionMock);
+
+        try (MockedStatic<Mail> mockedMail = mockStatic(Mail.class)) {
+            when(Mail.enviar(any(Mail.class))).thenReturn("true");
+
+            when(reserva.fueCancelada()).thenReturn(true);
+
+            aprobada.cancelarReserva();
+
+            assertTrue(reserva.fueCancelada());
+            mockedMail.verify(() -> Mail.enviar(any(Mail.class)), times(1));
     }
+}
 }

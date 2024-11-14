@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class AppMobileTest {
@@ -20,8 +21,22 @@ public class AppMobileTest {
     }
 
     @Test
-    void notificaCancelacionTest() {
+    void getPopUpWindowTest() { assertEquals(popUpWindowMock, app.getPopUoWindow()); }
 
+    @Test
+    void setPopUpWindowTest() {
+        PopUpWindow otroPopUpWindow = mock(PopUpWindow.class);
+        app.setPopUpWindow(otroPopUpWindow);
+        assertEquals(otroPopUpWindow, app.popUpWindow);
+    }
+
+    @Test
+    void inicializacionDeAppMobileTest() {
+        assertEquals(popUpWindowMock, app.getPopUoWindow());
+    }
+
+    @Test
+    void notificaCancelacionTest() {
         String mensaje = "";
 
         app.notificarCancelacionReserva(mensaje, publicacionMock);
@@ -30,7 +45,6 @@ public class AppMobileTest {
 
     @Test
     void noNotificaReservaTest() {
-
         String mensaje = "";
 
         app.notificarReserva(mensaje, publicacionMock);
@@ -39,7 +53,6 @@ public class AppMobileTest {
 
     @Test
     void noNotificaBajaDePrecioTest() {
-
         String mensaje = "";
 
         app.notificarBajaDePrecio(mensaje, publicacionMock);

@@ -8,6 +8,10 @@ public class ReservaPendiente implements EstadoReserva {
         this.reserva = reserva;
     }
 
+    public Reserva getReserva() {
+        return reserva;
+    }
+
     @Override
     public void aprobarReserva() {
         reserva.setEstado(new ReservaAprobada(reserva));
@@ -35,6 +39,9 @@ public class ReservaPendiente implements EstadoReserva {
     }
 
     public String enviarMailQueConfirmaLaAprobacion() {
-        return "Se envio con exito la aprobacion de la reserva al inquilino.";
+        String mailInquilino = reserva.getInquilino().getEmail();
+        String tipoInmueble = reserva.getPublicacion().getTipoDeInmueble().getTipoDeInmueble();
+        String mailPublicante = reserva.getPublicacion().getPropietario().getEmail();
+        return Mail.enviar(new Mail(mailPublicante, mailInquilino, "Reserva Aprobada", "El propietario del inmueble " + tipoInmueble + " ha aprobado tu reserva pendiente"));
     }
 }

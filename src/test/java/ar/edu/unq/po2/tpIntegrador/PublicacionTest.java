@@ -19,13 +19,13 @@ public class PublicacionTest {
 
     private Publicacion publicacion;
     private SitioWeb sitio;
-    private Propietario dummyPropietario;
+    private Usuario dummyPropietario;
     private TipoDeInmueble dummyTipoDeInmueble;
     private Foto dummyFoto;
     private FormaDePago dummyFormaDePago;
     private Servicio dummyServicio;
     private Precio dummyPrecio;
-    Inquilino inquilino;
+    Usuario inquilino;
     FormaDePago tarjeta;
     LocalDate diaDesde;
     LocalDate diaHasta;
