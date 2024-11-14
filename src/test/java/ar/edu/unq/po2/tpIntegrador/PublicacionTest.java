@@ -246,6 +246,18 @@ public class PublicacionTest {
     }
 
     @Test
+    void estaAlquiladaEnFechasTest() {
+        assertFalse(publicacion.estaAlquiladaEnFechas(periodoDeFechas));
+
+        Reserva reserva = mock(Reserva.class);
+        when(reserva.seSuperponeConElPeriodo(periodoDeFechas)).thenReturn(true);
+        when(reserva.estaAprobada()).thenReturn(true);
+        publicacion.getReservas().add(reserva);
+
+        assertTrue(publicacion.estaAlquiladaEnFechas(periodoDeFechas));
+    }
+
+    @Test
     void estaReservadaEnFechasAunqueSoloCoincidaUnDiaTest() {
         assertFalse(publicacion.estaReservadaEnFechas(periodoDeFechas));
 

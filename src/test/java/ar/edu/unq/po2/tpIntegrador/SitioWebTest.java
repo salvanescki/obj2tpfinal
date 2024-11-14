@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-
 
 public class SitioWebTest {
 
@@ -149,5 +149,67 @@ public class SitioWebTest {
 
         assertEquals(List.of(casaEnQuilmes, quintaEnQuilmes),sitio.buscar(new Busqueda("Quilmes", ahora, enQuinceDias)));
         assertEquals(List.of(dptoEnMdp),sitio.buscar(new Busqueda("Mar del Plata", ahora, enQuinceDias)));
+    }
+
+    @Test
+    void topTenInquilinosQueMasHanAlquiladoTest() {
+        List<Usuario> usuarios = new ArrayList<>();
+
+        for(int i = 0; i < 20 ; i++){
+            Usuario usuario = mock(Usuario.class);
+            when(usuario.getCantidadDeVecesQueAlquilo()).thenReturn(i);
+            usuarios.add(usuario);
+            sitio.registrar(usuario);
+        }
+
+        assertEquals(usuarios.subList(10, 20).reversed(), sitio.topTenInquilinosQueMasHanAlquilado());
+    }
+
+    @Test
+    void inmueblesLibresTest() {
+        List<Publicacion> publicaciones = new ArrayList<>();
+
+        Usuario usuario = mock(Usuario.class);
+
+        for(int i = 0; i < 7 ; i++){
+            Publicacion publicacion = mock(Publicacion.class);
+            when(publicacion.estaReservadaEnFechas(any())).thenReturn(true);
+            publicaciones.add(publicacion);
+        }
+
+        for(int i = 0; i < 7 ; i++){
+            Publicacion publicacion = mock(Publicacion.class);
+            when(publicacion.estaReservadaEnFechas(any())).thenReturn(false);
+            publicaciones.add(publicacion);
+        }
+
+        when(usuario.getInmueblesPublicados()).thenReturn(publicaciones);
+        sitio.registrar(usuario);
+
+        assertEquals(publicaciones.subList(7, 14), sitio.inmueblesLibres());
+    }
+
+    @Test
+    void tasaDeOcupacionDelSitioTest() {
+        List<Publicacion> publicaciones = new ArrayList<>();
+
+        Usuario usuario = mock(Usuario.class);
+
+        for(int i = 0; i < 3 ; i++){
+            Publicacion publicacion = mock(Publicacion.class);
+            when(publicacion.estaAlquiladaEnFechas(any())).thenReturn(true);
+            publicaciones.add(publicacion);
+        }
+
+        for(int i = 0; i < 7 ; i++){
+            Publicacion publicacion = mock(Publicacion.class);
+            when(publicacion.estaAlquiladaEnFechas(any())).thenReturn(false);
+            publicaciones.add(publicacion);
+        }
+
+        when(usuario.getInmueblesPublicados()).thenReturn(publicaciones);
+        sitio.registrar(usuario);
+
+        assertEquals(30.0, sitio.tasaDeOcupacionDelSitio());
     }
 }

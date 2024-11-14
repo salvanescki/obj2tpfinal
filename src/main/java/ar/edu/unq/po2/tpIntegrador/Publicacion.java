@@ -146,6 +146,12 @@ public class Publicacion implements Rankeable {
                 .anyMatch(reserva -> reserva.seSuperponeConElPeriodo(periodo));
     }
 
+    public boolean estaAlquiladaEnFechas(Periodo periodo){
+        return reservas.stream()
+                .anyMatch(reserva -> reserva.seSuperponeConElPeriodo(periodo)
+                            && reserva.estaAprobada());
+    }
+
     private boolean sonFechasInvalidas(Periodo periodo) {
         return periodo.getFechaHasta().isBefore(periodo.getFechaDesde());
     }
