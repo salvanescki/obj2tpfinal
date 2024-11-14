@@ -12,7 +12,7 @@ public class Usuario implements Propietario, Inquilino {
     private String nombre;
     private String email;
     private String telefono;
-    private LocalDate fechaDeCreacion;
+    private final LocalDate fechaDeCreacion;
     private final List<Reserva> reservas;
     private final List<Publicacion> publicaciones;
     private final List<Ranking> rankings;
@@ -23,10 +23,10 @@ public class Usuario implements Propietario, Inquilino {
         setEmail(email);
         setTelefono(telefono);
         fechaDeCreacion = LocalDate.now();
-        reservas = new ArrayList<Reserva>();
-        publicaciones = new ArrayList<Publicacion>();
-        rankings = new ArrayList<Ranking>();
-        pagosPendientes = new ArrayList<Pagable>();
+        reservas = new ArrayList<>();
+        publicaciones = new ArrayList<>();
+        rankings = new ArrayList<>();
+        pagosPendientes = new ArrayList<>();
     }
 
     public String getNombre() {
@@ -139,17 +139,6 @@ public class Usuario implements Propietario, Inquilino {
         return publicaciones;
     }
 
-    /*
-        private boolean esRankingDePropietario(Ranking ranking) {
-            return sitio.esCategoriaDePropietario(ranking.getCategoria());
-        }
-
-        private List<Ranking> getRankingsDePropietario(){
-            return rankings.stream()
-                    .filter(this::esRankingDePropietario)
-                    .toList();
-        }
-    */
     private boolean fueHechoCheckOutConPropietario(Propietario propietario){
         return reservas.stream()
                         .anyMatch(reserva -> reserva.getPublicacion().getPropietario().equals(propietario)
