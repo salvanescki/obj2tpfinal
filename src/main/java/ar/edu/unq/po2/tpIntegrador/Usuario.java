@@ -161,7 +161,7 @@ public class Usuario implements Propietario, Inquilino {
     @Override
     public void puntuar(Ranking ranking) {
         validarCheckOut(ranking);
-        Ranking.validarRanking(ranking, this.getTipo());
+        Ranking.validarRanking(ranking, ranking.getCategoria().getTipoDeCategoria());
         rankings.add(ranking);
     }
 
@@ -175,10 +175,15 @@ public class Usuario implements Propietario, Inquilino {
         return RankingUtils.getPuntajePromedioTotal(rankings);
     }
 
+    private List<Ranking> getRankingsPropietario(){
+        return rankings.stream()
+                       .filter(r -> r.getCategoria().getTipoDeCategoria().equals("Propietario"))
+                       .toList();
+    }
+
     @Override
     public List<String> getComentariosDeInquilinosPrevios() {
-        // FIXME: Puede que acá haya que filtrar por los rankings de Propietario, ya que los de inquilino no tienen sentido
-        return RankingUtils.getComentariosDeInquilinosPrevios(rankings);
+        return RankingUtils.getComentariosDeInquilinosPrevios(getRankingsPropietario());
     }
 
     @Override

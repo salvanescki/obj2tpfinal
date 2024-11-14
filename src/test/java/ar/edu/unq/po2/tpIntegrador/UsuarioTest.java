@@ -275,6 +275,7 @@ public class UsuarioTest {
 
     @Test
     void getTipoTest() {
+        assertEquals("Usuario", usuario.getTipo());
         assertEquals("Inquilino", usuarioInquilino.getTipoInquilino());
         assertEquals("Propietario", usuarioPropietario.getTipoPropietario());
     }
@@ -312,22 +313,30 @@ public class UsuarioTest {
         inquilino.getReservas().add(reserva);
     }
 
-    private Categoria setUpCategoriaValida(Usuario usuario){
-        Categoria pagoEnTermino = mock(Categoria.class);
-        when(sitio.esCategoriaValida(pagoEnTermino, usuario.getTipo())).thenReturn(true);
+    private CategoriaInquilino setUpCategoriaValidaInquilino(){
+        CategoriaInquilino pagoEnTermino = mock(CategoriaInquilino.class);
+        when(pagoEnTermino.getTipoDeCategoria()).thenReturn("Inquilino");
+        when(sitio.esCategoriaValida(pagoEnTermino, "Inquilino")).thenReturn(true);
         return pagoEnTermino;
+    }
+
+    private CategoriaPropietario setUpCategoriaValidaPropietario(){
+        CategoriaPropietario buenaAtencion = mock(CategoriaPropietario.class);
+        when(buenaAtencion.getTipoDeCategoria()).thenReturn("Propietario");
+        when(sitio.esCategoriaValida(buenaAtencion, "Propietario")).thenReturn(true);
+        return buenaAtencion;
     }
 
     @Test
     void puntuarInquilinoTest() {
         setUpCheckOutContext(usuarioInquilino, usuarioPropietario);
-        usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 5, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)));
+        usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 5, "Muy buen cliente", setUpCategoriaValidaInquilino()));
     }
 
     @Test
     void puntuarInquilinoSinHaberHechoCheckOutLanzaExcepcionTest() {
         CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->
-                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 5, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)))
+                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 5, "Muy buen cliente", setUpCategoriaValidaInquilino()))
         );
         assertTrue(excepcion.getMessage().contains("No se puede rankear antes de hacer el check-out"));
     }
@@ -335,7 +344,7 @@ public class UsuarioTest {
     @Test
     void puntuarPropietarioSinHaberHechoCheckOutLanzaExcepcionTest() {
         CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->
-                usuarioPropietario.puntuar(setUpRanking(usuarioInquilino, 5, "Muy buen propietario", setUpCategoriaValida(usuarioInquilino)))
+                usuarioPropietario.puntuar(setUpRanking(usuarioInquilino, 5, "Muy buen propietario", setUpCategoriaValidaInquilino()))
         );
         assertTrue(excepcion.getMessage().contains("No se puede rankear antes de hacer el check-out"));
     }
@@ -344,7 +353,7 @@ public class UsuarioTest {
     void puntuarConUnPuntajeMayorACincoLanzaExcepcionTest() {
         setUpCheckOutContext(usuarioInquilino, usuarioPropietario);
         PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->
-                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 10, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)))
+                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 10, "Muy buen cliente", setUpCategoriaValidaInquilino()))
         );
         assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
     }
@@ -353,7 +362,7 @@ public class UsuarioTest {
     void puntuarConUnPuntajeMenorAUnoLanzaExcepcionTest() {
         setUpCheckOutContext(usuarioInquilino, usuarioPropietario);
         PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->
-                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 0, "Muy buen cliente", setUpCategoriaValida(usuarioInquilino)))
+                usuarioInquilino.puntuar(setUpRanking(usuarioPropietario, 0, "Muy buen cliente", setUpCategoriaValidaInquilino()))
         );
         assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
     }
@@ -370,7 +379,7 @@ public class UsuarioTest {
     @Test
     void getPuntajePromedioEnCategoriaEnListaDeRankingsVaciaLanzaExcepcionTest() {
         assertThrows(NoSuchElementException.class, ()->
-                usuarioInquilino.getPuntajePromedioEnCategoria(setUpCategoriaValida(usuarioInquilino))
+                usuarioInquilino.getPuntajePromedioEnCategoria(setUpCategoriaValidaInquilino())
         );
     }
 
@@ -382,12 +391,12 @@ public class UsuarioTest {
         );
     }
 
-    private void puntuarInquilino(Usuario inquilino, Usuario propietario, String comentario, int puntaje, Categoria categoria){
+    private void puntuarInquilino(Usuario inquilino, Usuario propietario, String comentario, int puntaje, CategoriaInquilino categoria){
         setUpCheckOutContext(inquilino, propietario);
         inquilino.puntuar(setUpRanking(propietario, puntaje, comentario, categoria));
     }
 
-    private void puntuarPropietario(Usuario propietario, Usuario inquilino, String comentario, int puntaje, Categoria categoria){
+    private void puntuarPropietario(Usuario propietario, Usuario inquilino, String comentario, int puntaje, CategoriaPropietario categoria){
         setUpCheckOutContext(inquilino, propietario);
         propietario.puntuar(setUpRanking(inquilino, puntaje, comentario, categoria));
     }
@@ -395,12 +404,12 @@ public class UsuarioTest {
     @Test
     void getPuntajePromedioEnCategoriaTest() {
         String comentario = "muy buen cliente";
-        Categoria categoria = setUpCategoriaValida(usuarioInquilino);
+        CategoriaInquilino categoria = setUpCategoriaValidaInquilino();
 
         for(int i = 0; i < 3; i++){
             puntuarInquilino(usuarioInquilino, new Usuario("Propietario" + i, "propietario" + i + "@gmail.com", "1234567"), comentario, 5 - i, categoria);
         }
-        puntuarInquilino(usuarioInquilino, new Usuario("Propietario 3", "propietario3@gmail.com", "1234567"), comentario, 1, setUpCategoriaValida(usuarioInquilino));
+        puntuarInquilino(usuarioInquilino, new Usuario("Propietario 3", "propietario3@gmail.com", "1234567"), comentario, 1, setUpCategoriaValidaInquilino());
 
         assertEquals(4.0, usuarioInquilino.getPuntajePromedioEnCategoria(categoria));
     }
@@ -408,12 +417,12 @@ public class UsuarioTest {
     @Test
     void getPuntajePromedioTotalTest() {
         String comentario = "muy buen cliente";
-        Categoria categoria = setUpCategoriaValida(usuarioInquilino);
+        CategoriaInquilino categoria = setUpCategoriaValidaInquilino();
 
         for(int i = 0; i < 3; i++){
             puntuarInquilino(usuarioInquilino, new Usuario("Propietario" + i, "propietario" + i + "@gmail.com", "1234567"), comentario, 5 - i, categoria);
         }
-        puntuarInquilino(usuarioInquilino, new Usuario("Propietario 3", "propietario3@gmail.com", "1234567"), comentario, 1, setUpCategoriaValida(usuarioInquilino));
+        puntuarInquilino(usuarioInquilino, new Usuario("Propietario 3", "propietario3@gmail.com", "1234567"), comentario, 1, setUpCategoriaValidaInquilino());
 
         assertEquals(3.2, usuarioInquilino.getPuntajePromedioTotal());
     }
@@ -425,8 +434,8 @@ public class UsuarioTest {
 
     @Test
     void getComentariosDeInquilinosPreviosTest() {
-        Categoria categoria1 = setUpCategoriaValida(usuarioPropietario);
-        Categoria categoria2 = setUpCategoriaValida(usuarioPropietario);
+        CategoriaPropietario categoria1 = setUpCategoriaValidaPropietario();
+        CategoriaPropietario categoria2 = setUpCategoriaValidaPropietario();
 
         Usuario inquilino1 = new Usuario("inquilino1", "inquilino1@gmail.com", "011-4224-1452");
         Usuario inquilino2 = new Usuario("inquilino2", "inquilino2@gmail.com", "011-2541-4224");
@@ -446,8 +455,8 @@ public class UsuarioTest {
 
     @Test
     void getPuntajeDeUsuarioEnCategoriaTest() {
-        Categoria categoria1 = setUpCategoriaValida(usuarioPropietario);
-        Categoria categoria2 = setUpCategoriaValida(usuarioPropietario);
+        CategoriaPropietario categoria1 = setUpCategoriaValidaPropietario();
+        CategoriaPropietario categoria2 = setUpCategoriaValidaPropietario();
 
         Usuario inquilino1 = new Usuario("inquilino1", "inquilino1@gmail.com", "011-4224-1452");
         Usuario inquilino2 = new Usuario("inquilino2", "inquilino2@gmail.com", "011-2541-4224");
@@ -467,4 +476,5 @@ public class UsuarioTest {
         assertEquals(3, usuarioPropietario.getPuntajeDeUsuarioEnCategoria(inquilino1, categoria2));
         assertEquals(1, usuarioPropietario.getPuntajeDeUsuarioEnCategoria(inquilino2, categoria1));
     }
+
 }
