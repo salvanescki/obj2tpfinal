@@ -1,10 +1,16 @@
 package ar.edu.unq.po2.tpIntegrador;
 
-import java.time.LocalDate;
-
 public class SitioAlquileres implements Listener {
 
     private HomePagePublisher publisher;
+
+    public HomePagePublisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(HomePagePublisher publisher) {
+        this.publisher = publisher;
+    }
 
     public SitioAlquileres(HomePagePublisher publisher) {
         this.publisher = publisher;

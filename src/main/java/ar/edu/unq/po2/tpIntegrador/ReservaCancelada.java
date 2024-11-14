@@ -10,6 +10,10 @@ public class ReservaCancelada implements EstadoReserva {
         this.reserva = reserva;
     }
 
+    public Reserva getReserva() {
+        return reserva;
+    }
+
     @Override
     public void aprobarReserva() {
         throw new OperacionInvalidaConEstadoReservaException("No se puede aprobar una reserva ya cancelada.");

@@ -5,12 +5,12 @@ import java.time.LocalDate;
 public class Reserva implements EstadoReserva {
 
     private EstadoReserva estado;
-    private final Inquilino inquilino;
+    private final Usuario inquilino;
     private final Periodo periodo;
     private final FormaDePago formaDePago;
     private final Publicacion publicacion;
 
-    public Reserva(Inquilino inquilino, Periodo periodo, FormaDePago formaDePago, Publicacion publicacion) {
+    public Reserva(Usuario inquilino, Periodo periodo, FormaDePago formaDePago, Publicacion publicacion) {
         this.inquilino = inquilino;
         this.periodo = periodo;
         this.formaDePago = formaDePago;
@@ -30,7 +30,7 @@ public class Reserva implements EstadoReserva {
         return periodo;
     }
 
-    public Inquilino getInquilino() {
+    public Usuario getInquilino() {
         return inquilino;
     }
 

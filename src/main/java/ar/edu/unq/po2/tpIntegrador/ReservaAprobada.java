@@ -37,7 +37,14 @@ public class ReservaAprobada implements EstadoReserva {
     }
 
     public String enviarMailQueAvisaLaCancelacion() {
-        return "Se envio con exito el aviso de cancelacion al propietario de la publicacion.";
+        String mailInquilino = reserva.getInquilino().getEmail();
+        String nombreInquilino = reserva.getInquilino().getNombre();
+        String mailPublicante = reserva.getPublicacion().getPropietario().getEmail();
+        return Mail.enviar(new Mail(mailInquilino, mailPublicante, "Reserva Cancelada", "El inquilino " + nombreInquilino + " ha cancelado la reserva"));
     };
+
+    public Reserva getReserva() {
+        return reserva;
+    }
 }
 
