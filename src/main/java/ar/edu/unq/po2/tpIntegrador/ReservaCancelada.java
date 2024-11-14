@@ -4,7 +4,7 @@ import ar.edu.unq.po2.tpIntegrador.excepciones.OperacionInvalidaConEstadoReserva
 
 public class ReservaCancelada implements EstadoReserva {
 
-    private Reserva reserva;
+    private final Reserva reserva;
 
     public ReservaCancelada(Reserva reserva) {
         this.reserva = reserva;

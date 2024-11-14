@@ -67,12 +67,12 @@ public class SitioWeb {
         return getListaDeCategorias(tipoRankeable).contains(categoria);
     }
 
-    private void validarPublicacion(Publicacion publicacion){
+    private void validarPublicacion(){
         // Acá podría agregarse lógica de validación respecto a la publicación y sus parámetros de construcción
     }
 
     public void darDeAltaInmueble(Propietario propietario, Publicacion publicacion) {
-        validarPublicacion(publicacion);
+        validarPublicacion();
         propietario.agregarPublicacion(publicacion);
     }
 

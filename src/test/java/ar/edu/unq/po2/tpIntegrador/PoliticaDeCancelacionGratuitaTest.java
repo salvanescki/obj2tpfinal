@@ -14,7 +14,7 @@ public class PoliticaDeCancelacionGratuitaTest {
     private PoliticaDeCancelacion politicaDeCancelacion;
     private Publicacion publicacion;
     private Reserva reserva;
-    private Inquilino inquilino;
+    private Usuario inquilino;
     private Precio precioTotalReserva;
     private Periodo periodoReserva;
 

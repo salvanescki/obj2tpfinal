@@ -8,9 +8,7 @@ public class TextoNormalizadoTest {
 
     @Test
     void formatearTextoNullLanzaExcepcionTest() {
-        NullPointerException excepcion = assertThrows(NullPointerException.class, ()->{
-            TextoNormalizado.normalizarTexto(null);
-        });
+        NullPointerException excepcion = assertThrows(NullPointerException.class, ()-> TextoNormalizado.normalizarTexto(null));
 
         assertTrue(excepcion.getMessage().contains("No fue ingresado correctamente texto, es null"));
     }

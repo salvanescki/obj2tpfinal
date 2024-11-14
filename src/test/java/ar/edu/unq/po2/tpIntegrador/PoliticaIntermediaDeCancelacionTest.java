@@ -16,7 +16,7 @@ public class PoliticaIntermediaDeCancelacionTest {
     private PoliticaDeCancelacion politicaDeCancelacion;
     private Publicacion publicacion;
     private Reserva reserva;
-    private Inquilino inquilino;
+    private Usuario inquilino;
     private Precio precioTotalReserva;
     private Precio mitadPrecioReserva;
     private Periodo periodoReserva;

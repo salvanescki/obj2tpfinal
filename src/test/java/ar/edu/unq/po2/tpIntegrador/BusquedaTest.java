@@ -41,13 +41,6 @@ public class BusquedaTest {
         publicaciones.addAll(Arrays.asList(casaEnQuilmes, dptoEnMdp, quintaEnQuilmes));
     }
 
-    private Periodo crearPeriodoMockDeFechas(LocalDate fechaInicio, LocalDate fechaFin){
-        Periodo periodo = mock(Periodo.class);
-        when(periodo.getFechaDesde()).thenReturn(fechaInicio);
-        when(periodo.getFechaHasta()).thenReturn(fechaFin);
-        return periodo;
-    }
-
     @Test
     void busquedaPorCiudadPublicacionesDisponiblesTest() {
         assertEquals(List.of(casaEnQuilmes, quintaEnQuilmes), new Busqueda("Quilmes", ahora, enQuinceDias).efectuarBusqueda(publicaciones));

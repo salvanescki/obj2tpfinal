@@ -2,7 +2,7 @@ package ar.edu.unq.po2.tpIntegrador;
 
 public class AppMobile implements Listener{
 
-    PopUpWindow popUpWindow;
+    private PopUpWindow popUpWindow;
 
     public PopUpWindow getPopUoWindow() {
         return popUpWindow;

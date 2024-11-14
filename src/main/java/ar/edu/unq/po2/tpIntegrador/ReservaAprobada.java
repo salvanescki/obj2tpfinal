@@ -4,7 +4,7 @@ import ar.edu.unq.po2.tpIntegrador.excepciones.OperacionInvalidaConEstadoReserva
 
 public class ReservaAprobada implements EstadoReserva {
 
-    private Reserva reserva;
+    private final Reserva reserva;
 
     public ReservaAprobada(Reserva reserva) {
         this.reserva = reserva;
@@ -36,12 +36,12 @@ public class ReservaAprobada implements EstadoReserva {
         return false;
     }
 
-    public String enviarMailQueAvisaLaCancelacion() {
+    public void enviarMailQueAvisaLaCancelacion() {
         String mailInquilino = reserva.getInquilino().getEmail();
         String nombreInquilino = reserva.getInquilino().getNombre();
         String mailPublicante = reserva.getPublicacion().getPropietario().getEmail();
-        return Mail.enviar(new Mail(mailInquilino, mailPublicante, "Reserva Cancelada", "El inquilino " + nombreInquilino + " ha cancelado la reserva"));
-    };
+        Mail.enviar(new Mail(mailInquilino, mailPublicante, "Reserva Cancelada", "El inquilino " + nombreInquilino + " ha cancelado la reserva"));
+    }
 
     public Reserva getReserva() {
         return reserva;

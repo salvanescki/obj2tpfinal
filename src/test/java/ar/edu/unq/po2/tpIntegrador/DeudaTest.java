@@ -39,9 +39,7 @@ public class DeudaTest {
         Precio montoMayorALaDeuda = mock(Precio.class);
         when(montoMayorALaDeuda.compareTo(montoDeuda)).thenReturn(1);
 
-        MontoIngresadoMayorADeudaException excepcion = assertThrows(MontoIngresadoMayorADeudaException.class, ()->{
-            deuda.pagar(montoMayorALaDeuda);
-        });
+        MontoIngresadoMayorADeudaException excepcion = assertThrows(MontoIngresadoMayorADeudaException.class, ()-> deuda.pagar(montoMayorALaDeuda));
         assertTrue(excepcion.getMessage().contains("El monto que estás queriendo pagar es mayor a la deuda total"));
     }
 
@@ -57,14 +55,10 @@ public class DeudaTest {
         when(montoNegativo.getPrecio()).thenReturn(-1.0);
         when(montoNegativo.compareTo(montoDeuda)).thenReturn(-1);
 
-        MontoIngresadoNoValidoException excepcion = assertThrows(MontoIngresadoNoValidoException.class, ()->{
-            deuda.pagar(montoCero);
-        });
+        MontoIngresadoNoValidoException excepcion = assertThrows(MontoIngresadoNoValidoException.class, ()-> deuda.pagar(montoCero));
         assertTrue(excepcion.getMessage().contains("El monto ingresado no puede ser menor o igual a cero"));
 
-        excepcion = assertThrows(MontoIngresadoNoValidoException.class, ()->{
-            deuda.pagar(montoNegativo);
-        });
+        excepcion = assertThrows(MontoIngresadoNoValidoException.class, ()-> deuda.pagar(montoNegativo));
         assertTrue(excepcion.getMessage().contains("El monto ingresado no puede ser menor o igual a cero"));
     }
 

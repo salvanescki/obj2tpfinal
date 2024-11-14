@@ -159,9 +159,7 @@ public class PublicacionTest {
     void definirPeriodoDosOMasVecesLanzaExcepcion() {
         publicacion.definirPeriodo(mockPeriodo);
 
-        PeriodoYaDefinidoException excepcion = assertThrows(PeriodoYaDefinidoException.class, ()->{
-            publicacion.definirPeriodo(mockPeriodo);
-        });
+        PeriodoYaDefinidoException excepcion = assertThrows(PeriodoYaDefinidoException.class, ()-> publicacion.definirPeriodo(mockPeriodo));
 
         assertTrue(excepcion.getMessage().contains("El periodo existe o se superpone con otro definido previamente"));
     }
@@ -173,9 +171,7 @@ public class PublicacionTest {
         Periodo mockPeriodoSuperpuesto = mock(Periodo.class);
         when(mockPeriodo.seSuperponeCon(mockPeriodoSuperpuesto)).thenReturn(true);
 
-        PeriodoYaDefinidoException excepcion = assertThrows(PeriodoYaDefinidoException.class, ()->{
-            publicacion.definirPeriodo(mockPeriodoSuperpuesto);
-        });
+        PeriodoYaDefinidoException excepcion = assertThrows(PeriodoYaDefinidoException.class, ()-> publicacion.definirPeriodo(mockPeriodoSuperpuesto));
 
         assertTrue(excepcion.getMessage().contains("El periodo existe o se superpone con otro definido previamente"));
     }
@@ -211,9 +207,7 @@ public class PublicacionTest {
     @Test
     void reservarConFechaDesdePosteriorAFechaHastaLanzaExcepcionTest() {
         Periodo periodoInvalido = crearPeriodoMockDeFechas(diaHasta, diaDesde);
-        FechasInvalidasException excepcion = assertThrows(FechasInvalidasException.class, ()->{
-            publicacion.reservar(inquilino, periodoInvalido, tarjeta);
-        });
+        FechasInvalidasException excepcion = assertThrows(FechasInvalidasException.class, ()-> publicacion.reservar(inquilino, periodoInvalido, tarjeta));
         assertTrue(excepcion.getMessage().contains("Las fechas introducidas no son válidas."));
     }
 
@@ -432,9 +426,7 @@ public class PublicacionTest {
         publicacion.getReservas().add(reserva);
         when(reserva.getInquilino()).thenReturn(inquilino);
 
-        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->{
-            publicacion.checkOut(reserva, publicacion.getHorarioCheckOut());
-        });
+        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()-> publicacion.checkOut(reserva, publicacion.getHorarioCheckOut()));
         assertTrue(excepcion.getMessage().contains("No se puede hacer check out de una reserva previamente aprobada"));
     }
 
@@ -446,9 +438,7 @@ public class PublicacionTest {
         publicacion.getReservas().add(reserva);
         when(reserva.getInquilino()).thenReturn(inquilino);
 
-        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->{
-            publicacion.checkOut(reserva, publicacion.getHorarioCheckOut().plusHours(1));
-        });
+        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()-> publicacion.checkOut(reserva, publicacion.getHorarioCheckOut().plusHours(1)));
         assertTrue(excepcion.getMessage().contains("El horario de check-out de hoy ya ha pasado, inténtelo mañana"));
     }
 
@@ -486,33 +476,25 @@ public class PublicacionTest {
     void puntuarSinHaberHechoCheckOutLanzaExcepcionTest() {
         Usuario inquilino = mock(Usuario.class);
 
-        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()->{
-            publicacion.puntuar(setUpRanking(inquilino, 5, "muy buen wi-fi", setUpCategoriaValida()));
-        });
+        CheckOutNoRealizadoException excepcion = assertThrows(CheckOutNoRealizadoException.class, ()-> publicacion.puntuar(setUpRanking(inquilino, 5, "muy buen wi-fi", setUpCategoriaValida())));
         assertTrue(excepcion.getMessage().contains("No se puede rankear antes de hacer el check-out"));
     }
 
     @Test
     void puntuarConUnPuntajeMayorACincoLanzaExcepcionTest() {
-        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->{
-            publicacion.puntuar(setUpRanking(setUpCheckOutContext(mock(Usuario.class)), 10, "muy buen wi-fi", setUpCategoriaValida()));
-        });
+        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()-> publicacion.puntuar(setUpRanking(setUpCheckOutContext(mock(Usuario.class)), 10, "muy buen wi-fi", setUpCategoriaValida())));
         assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
     }
 
     @Test
     void puntuarConUnPuntajeMenorAUnoLanzaExcepcionTest() {
-        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()->{
-            publicacion.puntuar(setUpRanking(setUpCheckOutContext(mock(Usuario.class)), 0, "muy buen wi-fi", setUpCategoriaValida()));
-        });
+        PuntajeInvalidoException excepcion = assertThrows(PuntajeInvalidoException.class, ()-> publicacion.puntuar(setUpRanking(setUpCheckOutContext(mock(Usuario.class)), 0, "muy buen wi-fi", setUpCategoriaValida())));
         assertTrue(excepcion.getMessage().contains("El puntaje debe ser en una escala del 1 al 5"));
     }
 
     @Test
     void puntuarUnaCategoriaInvalidaLanzaExcepcionTest() {
-        CategoriaInvalidaException excepcion = assertThrows(CategoriaInvalidaException.class, ()->{
-            publicacion.puntuar(setUpRanking(setUpCheckOutContext(mock(Usuario.class)), 4, "muy buen wi-fi", mock(Categoria.class)));
-        });
+        CategoriaInvalidaException excepcion = assertThrows(CategoriaInvalidaException.class, ()-> publicacion.puntuar(setUpRanking(setUpCheckOutContext(mock(Usuario.class)), 4, "muy buen wi-fi", mock(Categoria.class))));
         assertTrue(excepcion.getMessage().contains("La categoría ingresada no es válida"));
     }
 

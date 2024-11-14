@@ -55,8 +55,6 @@ public class ReservaPendienteTest {
         when(reserva.getInquilino()).thenReturn(inquilinoMock);
         when(reserva.getPublicacion()).thenReturn(publicacionMock);
 
-        String tipoInmueble = reserva.getPublicacion().getTipoDeInmueble().getTipoDeInmueble();
-
         try (MockedStatic<Mail> mockedMail = mockStatic(Mail.class)) {
             when(Mail.enviar(any(Mail.class))).thenReturn("true");
 

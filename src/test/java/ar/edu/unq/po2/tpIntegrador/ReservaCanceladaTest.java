@@ -43,18 +43,14 @@ public class ReservaCanceladaTest {
 
     @Test
     void alIntentarAprobarseLanzaExcepcionTest() {
-        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
-            cancelada.aprobarReserva();
-        });
+        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> cancelada.aprobarReserva());
 
         assertTrue(excepcion.getMessage().contains("No se puede aprobar una reserva ya cancelada."));
     }
 
     @Test
     void alIntentarCancelarseLanzaExcepcionTest() {
-        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> {
-            cancelada.cancelarReserva();
-        });
+        OperacionInvalidaConEstadoReservaException excepcion = assertThrows(OperacionInvalidaConEstadoReservaException.class, () -> cancelada.cancelarReserva());
 
         assertTrue(excepcion.getMessage().contains("No se puede cancelar una reserva ya cancelada."));
 

@@ -2,12 +2,10 @@ package ar.edu.unq.po2.tpIntegrador;
 
 import ar.edu.unq.po2.tpIntegrador.excepciones.*;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class Publicacion implements Rankeable {
 
@@ -128,10 +126,9 @@ public class Publicacion implements Rankeable {
         }
     }
 
-    public Periodo definirPeriodo(Periodo periodo){
+    public void definirPeriodo(Periodo periodo){
         validarPeriodo(periodo);
         periodos.add(periodo);
-        return periodo;
     }
 
     public int getCantidadDeVecesAlquilada() {
@@ -168,8 +165,8 @@ public class Publicacion implements Rankeable {
             notificarNuevaReserva(periodo);
         }
         reservas.add(reserva);
-        inquilinosPrevios.remove((Usuario) inquilino);
-        ((Usuario) inquilino).agregarReserva(reserva);
+        inquilinosPrevios.remove(inquilino);
+        inquilino.agregarReserva(reserva);
     }
 
     private Reserva getFirstReservaCondicional(Periodo periodo){

@@ -1,9 +1,6 @@
 package ar.edu.unq.po2.tpIntegrador;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -27,7 +24,7 @@ public class AppMobileTest {
     void setPopUpWindowTest() {
         PopUpWindow otroPopUpWindow = mock(PopUpWindow.class);
         app.setPopUpWindow(otroPopUpWindow);
-        assertEquals(otroPopUpWindow, app.popUpWindow);
+        assertEquals(otroPopUpWindow, app.getPopUoWindow());
     }
 
     @Test
