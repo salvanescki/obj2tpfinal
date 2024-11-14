@@ -1,9 +1,14 @@
 package ar.edu.unq.po2.tpIntegrador.testsDeIntegracion;
 import ar.edu.unq.po2.tpIntegrador.*;
 
+import ar.edu.unq.po2.tpIntegrador.excepciones.usuarioNoPuedeRegistrarseConDatosIncompletosException;
 import org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IntegrationTest {
 
@@ -11,10 +16,46 @@ public class IntegrationTest {
 
     @BeforeEach
     void setUp() {
-        usuario = new Usuario("hola chicos", "sigo con el informe", "quiero terminar xd");
+        usuario = new Usuario("Cristian", "Cristian@gmial.com", "1165543383");
     }
 
     @Test
-    void name() {
+    void usuarioSeRegistraComoPropietario() {
+        assertEquals("Propietario", usuario.getTipoPropietario());
     }
+
+    @Test
+    void usuarioSeRegistraComoInquilino(){
+        assertEquals("Inquilino", usuario.getTipoInquilino());
+    }
+/*
+    @Test
+    void usuarioNoPuedeRegistrarseConNombreNulo() {
+        usuarioNoPuedeRegistrarseConDatosIncompletosException excepcion = assertThrows(
+                usuarioNoPuedeRegistrarseConDatosIncompletosException.class,
+                () -> new Usuario(null, "test@example.com", "123456789")
+        );
+        assertTrue(excepcion.getMessage().contains("El nombre no puede ser nulo o vacío"));
+    }
+
+    @Test
+    void usuarioNoPuedeRegistrarseConEmailNulo() {
+        usuarioNoPuedeRegistrarseConDatosIncompletosException excepcion = assertThrows(
+                usuarioNoPuedeRegistrarseConDatosIncompletosException.class,
+                () -> new Usuario("Juan", null, "123456789")
+        );
+        assertTrue(excepcion.getMessage().contains("El email no puede ser nulo o vacío"));
+    }
+
+    @Test
+    void usuarioNoPuedeRegistrarseConTelefonoNulo() {
+        usuarioNoPuedeRegistrarseConDatosIncompletosException excepcion = assertThrows(
+                usuarioNoPuedeRegistrarseConDatosIncompletosException.class,
+                () -> new Usuario("Juan", "test@example.com", null)
+        );
+        assertTrue(excepcion.getMessage().contains("El teléfono no puede ser nulo o vacío"));
+    }
+
+ */
 }
+
