@@ -3,16 +3,18 @@ import java.text.Normalizer;
 
 public class TextoNormalizado {
 
+    private static void validarTexto(String texto){
+        if(texto == null){
+            throw new NullPointerException("No fue ingresado correctamente texto, es null");
+        }
+    }
+
     public static String normalizarTexto(String texto) {
-        if (texto == null) return null;
+        validarTexto(texto);
 
-
-        texto = texto.toLowerCase();
-
-        texto = texto.trim().replaceAll("\\s+", " ");
-
-        texto = Normalizer.normalize(texto, Normalizer.Form.NFD);
-        texto = texto.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        texto = texto.toUpperCase();
+        texto = Normalizer.normalize(texto, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+        texto = texto.replaceAll("[^A-Z]", "");
 
         return texto;
     }

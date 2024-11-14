@@ -454,7 +454,7 @@ public class PublicacionTest {
 
     private CategoriaPublicacion setUpCategoriaValida(){
         CategoriaPublicacion servicios = mock(CategoriaPublicacion.class);
-        when(sitio.esCategoriaValida(servicios, publicacion)).thenReturn(true);
+        when(sitio.esCategoriaValida(servicios, publicacion.getTipo())).thenReturn(true);
         return servicios;
     }
 

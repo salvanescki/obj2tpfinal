@@ -1,7 +1,6 @@
 package ar.edu.unq.po2.tpIntegrador;
 
 import ar.edu.unq.po2.tpIntegrador.excepciones.CheckOutNoRealizadoException;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -139,17 +138,18 @@ public class Usuario implements Propietario, Inquilino {
     public List<Publicacion> getInmueblesPublicados() {
         return publicaciones;
     }
-/*
-    private boolean esRankingDePropietario(Ranking ranking) {
-        return sitio.esCategoriaDePropietario(ranking.getCategoria());
-    }
 
-    private List<Ranking> getRankingsDePropietario(){
-        return rankings.stream()
-                .filter(this::esRankingDePropietario)
-                .toList();
-    }
-*/
+    /*
+        private boolean esRankingDePropietario(Ranking ranking) {
+            return sitio.esCategoriaDePropietario(ranking.getCategoria());
+        }
+
+        private List<Ranking> getRankingsDePropietario(){
+            return rankings.stream()
+                    .filter(this::esRankingDePropietario)
+                    .toList();
+        }
+    */
     private boolean fueHechoCheckOutConPropietario(Propietario propietario){
         return reservas.stream()
                         .anyMatch(reserva -> reserva.getPublicacion().getPropietario().equals(propietario)
@@ -172,7 +172,7 @@ public class Usuario implements Propietario, Inquilino {
     @Override
     public void puntuar(Ranking ranking) {
         validarCheckOut(ranking);
-        Ranking.validarRanking(ranking, this);
+        Ranking.validarRanking(ranking, this.getTipo());
         rankings.add(ranking);
     }
 
@@ -199,8 +199,14 @@ public class Usuario implements Propietario, Inquilino {
 
     @Override
     public String getTipo() {
+        return "Usuario";
+    }
+
+    public String getTipoInquilino() {
         return "Inquilino";
     }
 
-
+    public String getTipoPropietario() {
+        return "Propietario";
+    }
 }

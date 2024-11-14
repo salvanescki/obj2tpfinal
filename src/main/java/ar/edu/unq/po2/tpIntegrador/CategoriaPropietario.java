@@ -1,6 +1,6 @@
 package ar.edu.unq.po2.tpIntegrador;
 
-public class CategoriaPropietario extends Categoria{
+public class CategoriaPropietario extends Categoria {
 
     public CategoriaPropietario(String categoria) {
         super(categoria);

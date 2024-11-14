@@ -27,4 +27,12 @@ public class TipoDeInmuebleTest {
         assertEquals(TextoNormalizado.normalizarTexto(nuevoTipoDeInmueble), tipoDeInmueble.getTipoDeInmueble());
     }
 
+    @Test
+    void equalsTest() {
+        TipoDeInmueble tipoDeInmuebleA = new TipoDeInmueble("   ,.,-_323cAsA,.,. ");
+        TipoDeInmueble tipoDeInmuebleB = new TipoDeInmueble("Casa");
+
+        assertEquals(tipoDeInmuebleA, tipoDeInmuebleA);
+        assertEquals(tipoDeInmuebleA, tipoDeInmuebleB);
+    }
 }

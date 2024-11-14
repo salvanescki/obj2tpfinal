@@ -275,7 +275,19 @@ public class UsuarioTest {
 
     @Test
     void getTipoTest() {
-        assertEquals("Inquilino", usuarioInquilino.getTipo());
+        assertEquals("Inquilino", usuarioInquilino.getTipoInquilino());
+        assertEquals("Propietario", usuarioPropietario.getTipoPropietario());
+    }
+
+    @Test
+    void getFechaDeCreacionTest() {
+        assertEquals(LocalDate.now(), usuarioInquilino.getFechaDeCreacion());
+    }
+
+    @Test
+    void agregarPagoPendienteTest() {
+        Deuda deuda = mock(Deuda.class);
+        usuario.agregarPagoPendiente(deuda);
     }
 
     private Ranking setUpRanking(Usuario usuario, int puntaje, String comentario, Categoria categoria){
@@ -302,7 +314,7 @@ public class UsuarioTest {
 
     private Categoria setUpCategoriaValida(Usuario usuario){
         Categoria pagoEnTermino = mock(Categoria.class);
-        when(sitio.esCategoriaValida(pagoEnTermino, usuario)).thenReturn(true);
+        when(sitio.esCategoriaValida(pagoEnTermino, usuario.getTipo())).thenReturn(true);
         return pagoEnTermino;
     }
 

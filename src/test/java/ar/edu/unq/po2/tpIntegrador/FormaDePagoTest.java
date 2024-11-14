@@ -23,4 +23,13 @@ class FormaDePagoTest {
 
         assertEquals(TextoNormalizado.normalizarTexto(nuevaFormaDePago), formaDePagoObj.getFormaDePago());
     }
+
+    @Test
+    void equalsTest() {
+        FormaDePago tarjeta = new FormaDePago(" 4-.24-.-3.4.-t A rg E t  a-..- ");
+        FormaDePago tarjetaDos = new FormaDePago("Targeta");
+
+        assertEquals(tarjeta, tarjeta);
+        assertEquals(tarjeta, tarjetaDos);
+    }
 }
